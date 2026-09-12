@@ -41,8 +41,16 @@ def test_wesad_config_open_and_resolved_decisions():
     # Documents the current state: design TODOs still open, audit facts filled in.
     cfg = load_config("wesad")
     todos = find_todos(cfg)
-    assert "device" in todos  # T-01
-    assert "labels.excluded_conditions" in todos  # mapping approval pending
+    # still open
+    assert "evaluation.outer_split" in todos  # T-04: no executable default may masquerade as agreed
     assert "episodes.definition" in todos  # T-05
-    assert "labels.raw_codes" not in todos and cfg["labels"]["raw_codes"][2] == "stress"  # T-02 resolved as fact
+    assert "observation_policies.budget_unit" in todos and "observation_policies.detector" in todos  # T-06, T-07
+    # frozen by D-021
+    assert cfg["device"] == "wrist" and "device" not in todos  # T-01
+    assert cfg["labels"]["raw_codes"][2] == "stress" and cfg["labels"]["positive_code"] == 2 and cfg["labels"]["negative_code"] == 1
+    assert cfg["labels"]["ineligible_codes"] == [0, 3, 4, 5, 6, 7] and cfg["labels"]["preserve_raw_label"] is True
+    assert cfg["windowing"]["anchor"] == "pickle_t0" and cfg["windowing"]["grid_uses_labels"] is False  # invariant #19
+    assert cfg["windowing"]["eligibility_rule"] == "homogeneous_full_window"
+    assert cfg["windowing"]["mixed_window_policy"] == "keep_in_provenance_mark_ineligible"
     assert len(cfg["participants"]["all"]) == 15 and cfg["participants"]["excluded"] == []
+    assert cfg["features"]["hrv"]["enabled"] is False

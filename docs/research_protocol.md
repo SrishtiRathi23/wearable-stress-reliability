@@ -27,7 +27,7 @@ Wearable-stress evaluation typically reports accuracy/F1 against whatever labels
 | Nurse Stress (Hosseini et al. 2022) | Bounded real-world case study; Study D | After WESAD pipeline works |
 | Stress-Predict (Iqbal et al. 2022) | Replication of Study A (and B/C if time) under a different controlled protocol | Optional extension |
 
-FACT-level details (participant counts, signals, sampling rates, label codes, timestamp conventions) are **not yet verified** and will be filled into `docs/dataset_notes.md` by the audit scripts before any modelling.
+FACT-level details for WESAD (participants, signals, rates, label codes, alignment) were verified by the Phase-1 audit on 2026-09-12 and are recorded with provenance in `docs/dataset_notes.md`. Nurse and Stress-Predict details are not yet verified.
 
 ## 4. Primary hypotheses
 
@@ -53,6 +53,8 @@ Direction of effect is stated for clarity; the analyses are two-sided.
 3. `detector_triggered` - episodes ranked by a detector score; top-ranked labelled up to the budget. The detector is trained WITHOUT the held-out participant. **TODO:** define the detector (options: simple EDA-based score; a separate classifier trained on training participants; the evaluated model itself - each answers a different question and must be pre-declared).
 4. `duration_preferred` - longer candidate episodes preferred. **TODO:** episode boundaries for this policy must come from the detector or from time structure, NOT from reference labels (otherwise this uses test labels).
 5. `mixed` - targeted + random at a fixed ratio (feeds Study C).
+
+**Candidate frame (FROZEN, amendment A-1 / D-021).** 60-s non-overlapping windows on a time-only grid anchored at synchronised pickle t=0 per participant; boundaries never depend on labels. Eligibility for the primary binary task is decided afterwards: a window is eligible only if it is entirely raw code 1 (baseline reference) or entirely raw code 2 (protocol-stress reference); mixed windows are kept in provenance and marked ineligible, never relabelled. Codes 0, 3-7 are ineligible. Primary device: wrist E4; chest is sensitivity only.
 
 **Selection unit.** DESIGN CHOICE: selection operates on episodes/blocks, not on individual 60-s windows treated as independent. **TODO (open design issue, HIGH):** in WESAD, protocol blocks are few per participant (roughly one baseline block and one stress block per person). If "episode" = protocol block, targeted selection has almost nothing to choose between and Study A degenerates. Candidate resolutions: (a) define pseudo-episodes as fixed-length contiguous segments (e.g. 3-5 min) within the recording; (b) define episodes as detector-proposed contiguous runs; (c) window-level selection with contiguity constraints, reported as a diagnostic. Decide after the WESAD audit reports block durations.
 
@@ -93,7 +95,7 @@ Reporting unit: the participant. Windows are never treated as independent units 
 
 ## 10. Split rules
 
-- Outer: participant-level holdout. **TODO:** leave-one-participant-out vs grouped k-fold; decide once the usable participant count is verified. Splits are written to `data/manifests/splits_<dataset>.json` and versioned.
+- Outer: participant-level holdout. **TODO (T-04, still open after the audit):** leave-one-participant-out vs grouped k-fold with 15 participants; the config deliberately holds no default. Splits are written to `data/manifests/splits_<dataset>.json` and versioned.
 - Inner: grouped (by participant) splits within the training participants for hyperparameters, calibration, and thresholds. **TODO:** number of inner folds / development participants.
 - Random-row splits: diagnostic only, always labelled as such, never a headline result.
 
@@ -101,7 +103,7 @@ Reporting unit: the participant. Windows are never treated as independent units 
 
 1. Scalers, imputers, feature selection, hyperparameters, calibration, and all thresholds are fit on training/development participants only.
 2. No test outcome is used to choose any threshold or policy.
-3. No test label is used to construct any observation mask.
+3. No test label is used to construct any observation mask. Stronger (D-023): candidate construction and window boundaries for the primary Study-A frame are independent of held-out reference labels; selectors may use only explicitly permitted time/signal/model-derived inputs, never `raw_label`, `binary_analysis_label`, `eligibility` or protocol-state boundaries. Labels are used afterwards only for the evaluation target, scoring eligibility and full-reference metrics.
 4. Any detector used for `detector_triggered` is trained without the held-out participant.
 5. Transductive use of unlabelled test-participant data, if ever done, is labelled as such and reported separately.
 6. Raw data is never modified (`wsr.utils.integrity`).
@@ -120,7 +122,7 @@ Reporting unit: the participant. Windows are never treated as independent units 
 - Episode definition (see Study A TODO).
 - Calibration method (sigmoid vs isotonic) if development data allows.
 - Model family (LR / RF / XGBoost).
-- Device stream in WESAD (wrist vs chest) - **TODO** decide primary.
+- Device stream in WESAD: chest as sensitivity to the wrist primary (D-021).
 
 ## 14. Failure gates
 
@@ -150,4 +152,4 @@ Any analysis added or changed after results are seen is logged as post-hoc in `d
 
 ## Amendments
 
-_None yet. Format: date, section, change, reason, whether confirmatory analyses were affected._
+- **A-1, 2026-09-12, Sections 5, 10, 11, 13.** Froze the Phase-2 preprocessing contract after the independent Phase-1 review (D-021, D-022, D-023): wrist E4 primary; time-only 60-s grid anchored at pkl t=0; homogeneous-code eligibility; binary reference 1 vs 2 with 0, 3-7 ineligible; all 15 participants kept; participant as inferential unit; HRV off. Reason: audit facts (dataset_notes.md) and review findings. Confirmatory analyses not yet run, so none affected. Still open: T-04 split, T-05 selection unit, T-06 budgets/repetitions/budget charging, T-07 detector, T-08, T-09, T-10.

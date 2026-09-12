@@ -2,7 +2,7 @@
 
 **Purpose of this file.** This is the durable statement of what the project is, why it exists, and what constraints govern it. It exists so that any engineer or coding agent can understand the project from the repository alone, without chat history. It is the authoritative specification unless `docs/decisions.md` records a later change.
 
-Last updated: 2026-09-12 (repository bootstrap).
+Last updated: 2026-09-12 (Phase-1 closeout: WESAD audited; Phase-2 preprocessing contract frozen in D-021/D-022/D-023).
 
 ---
 
@@ -129,7 +129,11 @@ Details, hypotheses and open TODOs live in `docs/research_protocol.md`. Summary:
 
 **Models:** Logistic Regression, Random Forest, XGBoost; plus majority/prevalence baseline and possibly a simple EDA-based score. No deep learning (CNN/LSTM/Transformer) unless a later, scientifically motivated question requires it.
 
-**Windows:** 60-s non-overlapping as the starting design choice (not a claim of optimality). Sensitivity later: 30/60/120 s, only after the central pipeline works.
+**Windows (frozen for Phase 2, D-021):** 60-s non-overlapping windows on a time-only grid anchored at synchronised pickle t=0 per participant; never restarted at label boundaries; eligibility for the binary task (homogeneous raw code 1 or 2) decided afterwards; mixed windows kept in provenance, marked ineligible, never relabelled. Sensitivity later: 30/120 s, only after the central pipeline works.
+
+**Primary device (frozen, D-021):** wrist Empatica E4; chest RespiBAN is optional sensitivity only. Shared hardware with the Nurse data does not imply shared domain or label validity.
+
+**Loader safety (D-022):** any WESAD loader verifies the committed raw checksum baseline before unpickling, fails closed, validates dtypes/channel counts/rates, and never relies on an earlier CLI audit having run.
 
 **Feature families:** EDA (mean, variance/std, slope, tonic, phasic/SCR summaries, peak count/amplitude where valid); cardiac (reliable pulse/HR summaries, variability where valid); IBI/HRV only if beat quality and window duration support it; temperature (mean, variability, slope); ACC (magnitude, variability, movement intensity, jerk/burst where justified); signal quality (valid fraction, missingness, beat coverage, non-wear indicators). Do NOT upsample all signals to one rate just to align arrays; use modality-appropriate processing and common window-level features.
 
@@ -167,6 +171,7 @@ Details, hypotheses and open TODOs live in `docs/research_protocol.md`. Summary:
 16. NEVER claim novelty automatically.
 17. NEVER manipulate the analysis because the expected effect did not appear.
 18. NULL RESULTS ARE VALID.
+19. NEVER let candidate construction or window boundaries for the primary Study-A frame depend on held-out reference labels (D-023). Selectors may use only explicitly permitted time/signal/model-derived inputs; `raw_label`, `binary_analysis_label`, `eligibility` and protocol-state boundaries are never selector inputs.
 
 Where an invariant is mechanically checkable, a test under `tests/` enforces it (see `tests/` for which are implemented and which are still explicit skips).
 

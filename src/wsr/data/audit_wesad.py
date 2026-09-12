@@ -67,6 +67,12 @@ NOMINAL_RATES_HZ: dict[str, dict[str, float]] = {
     "chest": {"ACC": 700.0, "ECG": 700.0, "EMG": 700.0, "EDA": 700.0, "Temp": 700.0, "Resp": 700.0},
     "wrist": {"ACC": 32.0, "BVP": 64.0, "EDA": 4.0, "TEMP": 4.0},
 }
+#: readme II.1/II.2: accelerometers are 3-channel; every other modality is 1-channel.
+EXPECTED_CHANNELS: dict[str, dict[str, int]] = {
+    "chest": {"ACC": 3, "ECG": 1, "EMG": 1, "EDA": 1, "Temp": 1, "Resp": 1},
+    "wrist": {"ACC": 3, "BVP": 1, "EDA": 1, "TEMP": 1},
+}
+
 #: readme II.3 names the chest modalities "ACC, ECG, EDA, EMG, RESP, TEMP"; the
 #: pickle keys observed are 'Temp' and 'Resp'. Recorded as a doc/file discrepancy.
 CHEST_KEY_ALIASES = {"TEMP": "Temp", "RESP": "Resp"}
@@ -199,18 +205,22 @@ def raw_chest_crop_offset(respiban_txt: Path, pkl_chest_ecg: np.ndarray, probe_l
     ecg_raw = (raw / 65536.0 - 0.5) * 3.0
     pkl = np.asarray(pkl_chest_ecg).ravel()
     probe = pkl[:probe_len]
-    cands = np.flatnonzero(np.isclose(ecg_raw, probe[0], atol=1e-9))
-    hits = [int(c) for c in cands if c + probe.size <= ecg_raw.size and np.allclose(ecg_raw[c : c + probe.size], probe, atol=1e-9)]
-    out: dict[str, Any] = {"raw_rows": int(raw.size), "n_probe_matches": len(hits)}
+    atol = 1e-9  # absolute tolerance only; a 16-bit count step is ~4.6e-5 mV, so this is far below one count
+    cands = np.flatnonzero(np.isclose(ecg_raw, probe[0], rtol=0.0, atol=atol))
+    hits = [int(c) for c in cands if c + probe.size <= ecg_raw.size and np.allclose(ecg_raw[c : c + probe.size], probe, rtol=0.0, atol=atol)]
+    out: dict[str, Any] = {"raw_rows": int(raw.size), "n_probe_matches": len(hits), "atol": atol}
     if len(hits) != 1:
         out["matched"] = False
         return out
     h = hits[0]
-    full = h + pkl.size <= ecg_raw.size and bool(np.allclose(ecg_raw[h : h + pkl.size], pkl, atol=1e-9))
+    fits = h + pkl.size <= ecg_raw.size
+    max_abs_err = float(np.max(np.abs(ecg_raw[h : h + pkl.size] - pkl))) if fits else None
+    full = fits and max_abs_err <= atol
     out.update(
         {
             "matched": True,
             "full_length_match": full,
+            "max_abs_error_mV": max_abs_err,
             "raw_start_row": h,
             "crop_offset_s": round(h / LABEL_RATE_HZ, 4),
             "raw_rows_after_pkl_end": int(raw.size - (h + pkl.size)),
@@ -231,12 +241,24 @@ def raw_wrist_crop_offset(e4_zip: Path, pkl_wrist_acc: np.ndarray, probe_len: in
         lines = z.read("ACC.csv").decode("utf-8").strip().splitlines()
     start_ts = float(lines[0].split(",")[0])
     rate = float(lines[1].split(",")[0])
-    raw = np.array([[int(float(v)) for v in ln.split(",")] for ln in lines[2:]], dtype=np.int64)
-    pk = np.asarray(pkl_wrist_acc).astype(np.int64)
+    raw_f = np.array([[float(v) for v in ln.split(",")] for ln in lines[2:]], dtype=np.float64)
+    pk_f = np.asarray(pkl_wrist_acc, dtype=np.float64)
+    out: dict[str, Any] = {"raw_rows": int(raw_f.shape[0]), "declared_rate_hz": rate, "start_unix_ts": start_ts}
+    # readme II.2: ACC is in integer 1/64 g counts. Only compare as integers once both sides are exactly integral.
+    raw_integral = bool(np.all(np.isfinite(raw_f)) and np.array_equal(raw_f, np.round(raw_f)))
+    pkl_integral = bool(np.all(np.isfinite(pk_f)) and np.array_equal(pk_f, np.round(pk_f)))
+    out["raw_values_integral"] = raw_integral
+    out["pkl_values_integral"] = pkl_integral
+    if not (raw_integral and pkl_integral) or pk_f.ndim != 2 or pk_f.shape[1] != 3 or raw_f.ndim != 2 or raw_f.shape[1] != 3:
+        out["matched"] = False
+        out["reason"] = "non-integral values or unexpected channel count; integer comparison not attempted"
+        return out
+    raw = raw_f.astype(np.int64)
+    pk = pk_f.astype(np.int64)
     probe = pk[:probe_len]
     cands = np.flatnonzero((raw[:, 0] == probe[0, 0]) & (raw[:, 1] == probe[0, 1]) & (raw[:, 2] == probe[0, 2]))
     hits = [int(c) for c in cands if c + probe.shape[0] <= raw.shape[0] and np.array_equal(raw[c : c + probe.shape[0]], probe)]
-    out: dict[str, Any] = {"raw_rows": int(raw.shape[0]), "declared_rate_hz": rate, "start_unix_ts": start_ts, "n_probe_matches": len(hits)}
+    out["n_probe_matches"] = len(hits)
     if len(hits) != 1:
         out["matched"] = False
         return out
@@ -349,10 +371,19 @@ def _signal_entry(name: str, arr: Any, nominal_rate: float | None, ref_duration_
 
 def audit_labels(labels: np.ndarray) -> dict[str, Any]:
     labels = np.asarray(labels).ravel()
+    integer_dtype = bool(np.issubdtype(labels.dtype, np.integer))
+    integer_valued = integer_dtype or (
+        labels.size > 0 and np.issubdtype(labels.dtype, np.number) and bool(np.all(np.isfinite(labels))) and bool(np.array_equal(labels, np.round(labels)))
+    )
+    if not integer_valued:
+        return {"dtype": str(labels.dtype), "n_samples": int(labels.size), "integer_valued": False, "codes_present": [], "undocumented_codes": [], "missing_condition_codes": CONDITION_CODES, "per_code": {}, "runs": []}
+    if not integer_dtype:
+        labels = np.round(labels).astype(np.int64)
     summ = code_summary(labels, LABEL_RATE_HZ)
     runs = contiguous_runs(labels)
     return {
         "dtype": str(labels.dtype),
+        "integer_valued": True,
         "n_samples": int(labels.size),
         "duration_s": round(labels.size / LABEL_RATE_HZ, 4),
         "codes_present": sorted(int(c) for c in np.unique(labels)),
@@ -460,6 +491,9 @@ def audit_subject(wesad_dir: Path, subject_id: str) -> dict[str, Any]:
         flags.append("pkl_subject_field_mismatch")
 
     rec["labels"] = audit_labels(d["label"])
+    if not rec["labels"]["integer_valued"]:
+        flags.append("label_vector_not_integer_valued")
+        return rec
     label_dur = rec["labels"]["duration_s"]
     if rec["labels"]["undocumented_codes"]:
         flags.append("undocumented_label_codes")
@@ -482,6 +516,13 @@ def audit_subject(wesad_dir: Path, subject_id: str) -> dict[str, Any]:
                 continue
             entry = _signal_entry(name, d["signal"][dev][name], NOMINAL_RATES_HZ[dev].get(name), label_dur)
             entry["present"] = True
+            exp_ch = EXPECTED_CHANNELS[dev].get(name)
+            got_ch = entry["shape"][1] if len(entry["shape"]) == 2 else (1 if len(entry["shape"]) == 1 else None)
+            entry["expected_channels"] = exp_ch
+            if exp_ch is not None and got_ch != exp_ch:
+                flags.append(f"{dev}.{name}_channels_{got_ch}_ne_{exp_ch}")
+            if not entry.get("finite_numeric", True):
+                flags.append(f"{dev}.{name}_not_numeric")
             if name not in expected:
                 entry["undocumented_signal"] = True
                 flags.append(f"{dev}.{name}_undocumented")
@@ -500,7 +541,7 @@ def audit_subject(wesad_dir: Path, subject_id: str) -> dict[str, Any]:
                 flags.append(f"chest.{name}_length_ne_label")
 
     # --- cross-file alignment -------------------------------------------
-    crop = 0.0
+    crop: float | None = None  # None = crop not established; schedule alignment is then UNVERIFIED
     if resp.is_file() and "chest" in rec["signals"] and rec["signals"]["chest"].get("ECG", {}).get("present"):
         try:
             rec["pkl_vs_raw_respiban"] = raw_chest_crop_offset(resp, d["signal"]["chest"]["ECG"])
@@ -517,12 +558,16 @@ def audit_subject(wesad_dir: Path, subject_id: str) -> dict[str, Any]:
             rec["pkl_vs_raw_e4"] = {"error": repr(exc), "matched": False}
         if not (rec["pkl_vs_raw_e4"].get("matched") and rec["pkl_vs_raw_e4"].get("full_length_match")):
             flags.append("pkl_wrist_not_found_in_raw_e4")
-        elif crop and "respiban_txt" in rec:
+        elif crop is not None and "respiban_txt" in rec:
             rec["device_clock_check"] = device_clock_difference(rec["respiban_txt"], crop, rec["pkl_vs_raw_e4"]["pkl_t0_unix_ts"])
             res = rec["device_clock_check"].get("residual_after_2h_s")
             if res is not None and abs(res) > 30.0:
                 flags.append("device_clocks_disagree_gt_30s")
-    if "schedule" in rec:
+    if "schedule" in rec and crop is None:
+        rec["schedule_vs_labels"] = "UNVERIFIED: pkl-to-raw crop offset could not be established, so quest.csv times cannot be placed on the pkl timeline"
+        rec["schedule_offset_summary"] = {"status": "UNVERIFIED"}
+        flags.append("schedule_alignment_unverified")
+    elif "schedule" in rec:
         rec["schedule_vs_labels"] = compare_runs_to_schedule(rec["labels"]["runs"], rec["schedule"], crop)
         starts = [m["start_offset_s"] for m in rec["schedule_vs_labels"] if m["matched"]]
         ends = [m["end_offset_s"] for m in rec["schedule_vs_labels"] if m["matched"]]
@@ -563,7 +608,7 @@ def classify(rec: dict[str, Any]) -> str:
     """apparently_usable / questionable / unusable:<reason>. Never final; for review."""
     if not rec.get("readable"):
         return "unusable:pkl_unreadable_or_missing"
-    hard = [f for f in rec["flags"] if f.endswith("_missing") or f.endswith("_no_matching_run") or "unexpected" in f]
+    hard = [f for f in rec["flags"] if f.endswith("_missing") or f.endswith("_no_matching_run") or "unexpected" in f or "not_integer_valued" in f or "_channels_" in f or "not_numeric" in f]
     if hard:
         return "unusable:" + ";".join(hard)
     if rec["flags"]:

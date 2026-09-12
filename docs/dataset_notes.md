@@ -60,15 +60,18 @@ FACT `[audit]` - every participant has **exactly one contiguous baseline run and
 
 - Baseline runs: 1140-1198 s (median 1180) -> **19** non-overlapping 60-s windows per participant (285 total).
 - Stress runs: 615-725 s (median 664) -> **10-12** windows per participant (160 total).
-- Baseline:stress window ratio ~ 1.8:1. At 60 s, the entire binary task is **445 windows from 15 people**.
+- Baseline:stress window ratio ~ 1.8:1.
+- **Window counts depend on the construction rule; neither number below is "the" sample size until the Phase-2 grid is built:**
+  - **445** = complete 60-s windows obtained by restarting windowing separately at each true baseline/stress run boundary (285 baseline + 160 stress). This construction uses reference-label timing and therefore will **not** be the primary label-independent candidate construction.
+  - **434** = complete, label-homogeneous baseline/stress windows on a fixed 60-s grid anchored at synchronised pickle time t=0 (282 baseline + 152 stress), independently recomputed from `wesad_audit.json` on 2026-09-12; 60 further grid windows straddle a baseline/stress boundary and are ineligible for the primary binary task (they are kept in provenance, not relabelled). This time-only grid is the approved Phase-2 primary frame (D-021).
 - Condition order `[quest.csv line 2]`: 8 participants Base > Fun > Medi 1 > TSST > Medi 2 (S4, S5, S7, S8, S10, S13, S15, S17); 6 participants Base > TSST > Medi 1 > Fun > Medi 2 (S2, S3, S6, S9, S11, S16); S14's file names its meditation blocks "Medi 2" then "Medi 1" (both are code 4; naming quirk only). Baseline is always first.
 
 ### Alignment (resolves "which timeline do labels follow")
 
 - FACT `[readme II, III.1]`: labels are synchronised with the RespiBAN raw data (same start); `quest.csv` START/END are in `minutes.seconds` **counted from the raw RespiBAN recording start**; the E4 was synchronised to the RespiBAN by the authors using a double-tap gesture, and `S<id>.pkl` holds the synchronised result.
-- FACT `[audit]`: for all 15, the pkl chest ECG is an **exact, full-length crop** of the raw `respiban.txt` (after the readme's mV conversion) starting `chest crop s` into the raw file (42.8-164.8 s), with 55-215 s of raw data after the pkl end. So **pkl time = raw RespiBAN time - crop**, and the label vector is on the RespiBAN timeline.
-- FACT `[audit]`: after applying that crop, every label run of codes 1-4 starts **exactly 10.000 s after** its `quest.csv` START and ends **exactly 10.000 s before** its END (residuals <= 1 ms, all 15 participants, all 5 conditions). I.e. the released labels are the protocol intervals trimmed by 10 s at each end. (The readme does not state this; it is an empirical finding.)
-- FACT `[audit]`: for all 15, the pkl wrist ACC is an **exact, full-length crop** of the raw E4 `ACC.csv` (crop 961-1545 s into the E4 recording, which started earlier than the RespiBAN). The pkl wrist streams are therefore unmodified E4 data.
+- FACT `[audit]`: for all 15, the pkl **chest ECG** matches the raw `respiban.txt` ECG channel (after the readme's mV conversion) over its full length at a unique offset, with max absolute error 1.1e-16 mV (rtol = 0, atol = 1e-9), starting `chest crop s` into the raw file (42.8-164.8 s), with 55-215 s of raw data after the pkl end. INFERENCE: the pkl chest streams are a crop of the raw RespiBAN recording at that offset and **pkl time = raw RespiBAN time - crop**, so the label vector is on the RespiBAN timeline. **Only the ECG channel was compared**; chest EDA/EMG/Temp/Resp were not individually checked against the raw file.
+- EMPIRICAL FINDING `[audit]` (not a documented release rule): after applying that crop, the relationship between `quest.csv` START/END and the label runs of codes 1-4 is consistent with **approximately 10 seconds trimmed at each scheduled-condition boundary**, agreeing within one 700-Hz label sample (~1.43 ms) across all 75 checked condition boundaries (15 participants x 5 conditions; residuals 0 or -1 sample at both start and end). Exact sample-level values are retained in `wesad_audit.json` (`schedule_vs_labels`); seconds are rounded for display only. The readme does not state this trim.
+- FACT `[audit]`: for all 15, the pkl **wrist ACC** (integer-valued on both sides, verified before comparison) matches the raw E4 `ACC.csv` over its full length at a unique offset (crop 961-1545 s into the E4 recording, which started earlier than the RespiBAN). INFERENCE: the pkl wrist streams are a crop of the raw E4 recording at that offset. **Only ACC was compared**; wrist BVP/EDA/TEMP were not individually checked against their csv files (their lengths match the ACC-implied duration at the documented rates).
 - INFERENCE `[audit]`: wall-clock of pkl t=0 from the RespiBAN header (device-local time, 1-s resolution) vs from the E4 unix timestamp (UTC) differ by 2 h + (-0.7 ... +3.6 s) for all 15; 2 h is CEST-UTC in Germany in May-Aug 2017. The authors' double-tap synchronisation is therefore consistent with the two devices' independent clocks to within a few seconds; we cannot verify it more finely without re-deriving the double-tap alignment, and we do not attempt to.
 - `quest.csv` time format trap: `7.08` means 7 min 08 s; `50.3` means 50 min 30 s. Implemented in `audit_wesad.parse_min_sec` with tests.
 
@@ -87,14 +90,14 @@ FACT `[audit]` - every participant has **exactly one contiguous baseline run and
 
 1. Chest pickle keys `Temp`/`Resp` vs readme "TEMP"/"RESP" (naming only).
 2. Readme does not document the 10-s trim between `quest.csv` intervals and label runs (empirical, consistent).
-3. Readme does not state that the pkl is a crop of the raw files (empirical, exact for both devices).
+3. Readme does not state that the pkl is a crop of the raw files (empirical; verified on chest ECG and wrist ACC only, inferred for the other modalities).
 4. S14 quest names meditation blocks in swapped order (no effect on codes).
 5. S2 has no `bRead` block and hence no code 5 (consistent between quest and labels; not an error).
 
 ### Open questions this audit does NOT settle
 
-- T-01 device choice (wrist vs chest): both streams are complete and aligned for all 15; the audit gives no structural reason to prefer one.
-- T-05 selection unit: see the block evidence above and `known_issues.md` KI-05 - protocol blocks give exactly 2 relevant blocks per participant.
+- ~~T-01 device choice~~ - resolved after review as a DESIGN choice (D-021: wrist E4 primary, chest optional sensitivity). The audit itself gave no structural reason to prefer one.
+- T-05 selection unit: see the block evidence above and `known_issues.md` KI-05 - protocol blocks give exactly 2 relevant blocks per participant, which makes block-level selection an extremely coarse and poorly representative annotation model (not an impossibility).
 - Whether code 3 (amusement) or 4 (meditation) should ever enter the study: excluded under the proposed initial mapping; any inclusion is a pre-declared amendment.
 
 ---

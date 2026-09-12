@@ -128,9 +128,42 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 ### D-019 - WESAD factual findings adopted from the structural audit (resolves T-02; factual part of T-03)
 - **Date:** 2026-09-12
 - **Category:** FACT (verified; see `docs/dataset_notes.md` for provenance of each item)
-- **Decision:** The following are treated as facts: 15 participants (S2-S11, S13-S17), all structurally usable, none excluded; label codes 0-7 with readme meanings, no undocumented codes; label rate 700 Hz on the RespiBAN timeline; chest 700 Hz x6 modalities, wrist ACC 32 / BVP 64 / EDA 4 / TEMP 4 Hz; the pkl is an exact crop of both raw device files; label runs equal `quest.csv` intervals trimmed by 10 s at each end; exactly one contiguous baseline run (1140-1198 s) and one stress run (615-725 s) per participant. Recorded in `configs/wesad.yaml`.
+- **Decision:** The following are treated as facts: 15 participants (S2-S11, S13-S17), all structurally usable, none excluded; label codes 0-7 with readme meanings, no undocumented codes; label rate 700 Hz on the RespiBAN timeline; chest 700 Hz x6 modalities, wrist ACC 32 / BVP 64 / EDA 4 / TEMP 4 Hz; the pkl chest ECG and wrist ACC each match their raw device file at a unique offset (the other modalities are inferred, not individually checked); label runs are empirically consistent with `quest.csv` intervals trimmed by ~10 s at each end (within one 700-Hz sample); exactly one contiguous baseline run (1140-1198 s) and one stress run (615-725 s) per participant. Recorded in `configs/wesad.yaml`.
 - **Not decided here:** device choice (T-01), split strategy (T-04), selection unit (T-05), budget (T-06), detector (T-07), and the binary label mapping / exclusion list (proposed: positive = 2, negative = 1, excluded = {0, 3, 4, 5, 6, 7}) which remains a DESIGN proposal until approved.
 - **Status:** agreed (facts); mapping provisional
+
+### D-020 - Git history was rewritten once for author identity; frozen from here
+- **Date:** 2026-09-12
+- **Category:** ENGINEERING / PROVENANCE
+- **What happened:** the two bootstrap commits were created with the operator's global git identity and a `Co-Authored-By: Claude` trailer. At the repository owner's explicit request (sole authorship: Srishti Rathi <srishtirathi723@gmail.com>, no AI co-author trailer), `git filter-branch` rewrote author/committer metadata and stripped the trailer **before the first push**. Tree contents were unchanged. Commit ids changed: `297872c` -> `c98193c` (bootstrap), `6e5496d` -> `3445fd0` (review fixes). Earlier review documents citing the old ids refer to the same trees.
+- **Rule from this checkpoint:** no further history rewriting. Commit identities are preserved for reproducibility; corrections are made with new commits.
+- **Status:** agreed
+
+### D-021 - Phase-2 preprocessing contract (APPROVED after independent Phase-1 review)
+- **Date:** 2026-09-12
+- **Category:** DESIGN CHOICE
+- **Primary device:** wrist Empatica E4. Rationale: keeps the main project focused; aligns the sensor family with the later Nurse case-study motivation; chest remains optional sensitivity work. Shared hardware must NOT be claimed to imply shared domain or label validity between WESAD and the Nurse data. (Resolves T-01.)
+- **Primary window grid:** 60-s non-overlapping windows, anchored at synchronised pickle time t=0 for each participant, constructed from TIME ONLY. Windows are never restarted at true-label boundaries.
+- **Candidate frame:** the time grid is constructed over the synchronised recording without consulting reference labels. Window existence and boundaries must not depend on stress/baseline labels. Complete provenance is preserved for every generated window (participant, window index, start/end sample and second, raw-code composition).
+- **Primary binary reference:** raw code 1 = BASELINE reference; raw code 2 = PROTOCOL-STRESS reference; codes 0, 3, 4, 5, 6, 7 are NOT eligible for the primary binary target and are never silently converted to baseline/non-stress. Raw label values are preserved separately from any analysis label. Wording: "baseline versus protocol stress"; code 1 is not claimed to prove absence of psychological stress. (Resolves the mapping part of T-02.)
+- **Window eligibility:** determined AFTER the time-only window exists. A window is eligible for the primary binary supervised task only when its complete 60-s interval is homogeneous raw code 1 or homogeneous raw code 2. Mixed-label / boundary windows are not majority-voted or relabelled; they are kept in provenance/audit outputs and marked ineligible.
+- **Participants:** all 15 released participants stay in the primary preprocessing dataset. S6/S15 are not excluded for weak induction; S2/S17 are not excluded for chest-temperature caveats (wrist is primary). Any later exclusion needs a pre-declared quality reason and a log entry. (Resolves the remaining part of T-03.)
+- **Inferential unit:** the participant. 60-s windows are not independent people.
+- **Chest:** optional sensitivity analysis only; not required for minimum project completion.
+- **HRV:** disabled for Phase 2 unless separately approved (T-10 stays open).
+- **Status:** agreed (frozen). Reflected in `configs/base.yaml`, `configs/wesad.yaml`, `research_protocol.md` amendment A-1, `PROJECT_CONTEXT.md` invariant #19.
+
+### D-022 - Phase-2 WESAD loader safety contract
+- **Date:** 2026-09-12
+- **Category:** ENGINEERING
+- **Contract:** the Phase-2 loader must (1) verify the committed raw checksum baseline BEFORE deserialising any pickle; (2) fail closed if verification fails or no baseline exists; (3) validate required array numeric dtypes, channel counts (`EXPECTED_CHANNELS`) and nominal rates on load; (4) never assume that a previous CLI audit run makes a later direct loader call safe - every loader entry point performs its own verification. Not implemented in this closeout.
+- **Status:** agreed
+
+### D-023 - Label-independence invariant for Study-A candidate construction
+- **Date:** 2026-09-12
+- **Category:** DESIGN CHOICE / INVARIANT
+- **Rule:** candidate construction and window boundaries for the primary Study-A frame must be independent of held-out reference labels. Future selectors may use only explicitly permitted time-, signal- or model-derived information. The fields `raw_label`, `binary_analysis_label`, `eligibility`, and protocol-state boundaries are never selector inputs. Reference labels are used only afterwards to define the evaluation target, determine scoring eligibility, and compute full-reference comparison metrics. The selector is not implemented yet.
+- **Status:** agreed (invariant #19 in PROJECT_CONTEXT.md)
 
 ---
 
@@ -138,11 +171,11 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 
 | ID | Decision needed | Blocks | Where |
 |---|---|---|---|
-| T-01 | WESAD device stream (wrist / chest / both). Audit: both complete and aligned for all 15; no structural reason to prefer either. Engineer's recommendation (not adopted): wrist as primary for comparability with the Nurse E4 data, chest as a sensitivity analysis | feature extraction | `configs/wesad.yaml: device` |
-| T-02 | ~~Raw label codes~~ RESOLVED as FACT (D-019). Remaining: approve the binary mapping and exclusion list {0,3,4,5,6,7} | labels | `configs/wesad.yaml: labels.excluded_conditions` |
-| T-03 | ~~Usable participants~~ RESOLVED as FACT: 15, none structurally excluded (D-019). Remaining DESIGN question: whether readme caveats (S6/S15 weak stress induction; S2/S17 chest Temp) warrant any pre-declared handling | splits | `docs/dataset_notes.md` |
-| T-04 | LOPO vs grouped k-fold outer split; inner fold count | baseline | `configs/base.yaml: evaluation` |
-| T-05 | Episode / selection-unit definition on WESAD; candidate generation must itself be label-independent, not just the final mask function. Audit CONFIRMS KI-05: exactly 1 baseline + 1 stress block per participant, so protocol-block selection is degenerate. Engineer's recommendation (not adopted): fixed-length contiguous pseudo-episodes (e.g. 3-5 min) as the primary unit with detector-proposed episodes as a comparison | Study A | `research_protocol.md` S5; KI-05; KI-06 |
+| T-01 | ~~WESAD device stream~~ RESOLVED (D-021): wrist E4 primary; chest optional sensitivity | feature extraction | `configs/wesad.yaml: device` |
+| T-02 | ~~Raw label codes~~ RESOLVED as FACT (D-019); ~~binary mapping~~ RESOLVED (D-021): 1 = baseline reference, 2 = protocol-stress reference, {0,3,4,5,6,7} ineligible | labels | `configs/wesad.yaml: labels` |
+| T-03 | ~~Usable participants~~ RESOLVED (D-019, D-021): all 15 kept; no caveat-based exclusion | splits | `docs/dataset_notes.md` |
+| T-04 | LOPO vs grouped k-fold outer split; inner fold count. NOT decided - `configs/base.yaml: evaluation.outer_split` is deliberately `null` so no executable default masquerades as an agreed choice | baseline | `configs/base.yaml: evaluation` |
+| T-05 | Episode / selection-unit definition on WESAD; candidate generation must itself be label-independent, not just the final mask function. Audit CONFIRMS KI-05: exactly 1 baseline + 1 stress block per participant, so protocol-block selection would be an extremely coarse, condition-confounded annotation model (see KI-05 for the precise limitation). The primary candidate FRAME is now fixed (D-021: time-only 60-s grid at pkl t=0); what remains open is the selection UNIT/grouping on that grid, the annotation budgets, random-mask repetition count, and how budget is charged for windows outside baseline/stress. Engineer's recommendation (not adopted): fixed-length contiguous pseudo-episodes (e.g. 3-5 min) as the primary unit with detector-proposed episodes as a comparison | Study A | `research_protocol.md` S5; KI-05; KI-06 |
 | T-06 | Budget unit and budget grid | Study A/B/C | `configs/base.yaml: observation_policies` |
 | T-07 | Detector definition for `detector_triggered` | Study A | `research_protocol.md` S5 |
 | T-08 | Study B specification: development roles (which participants play calibration/threshold/selection roles), detector access in development, coverage constraint or loss, tie handling, comparator; then the regret formula | Study B | `research_protocol.md` S6; KI-18 |

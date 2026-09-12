@@ -23,9 +23,16 @@ paths:
   results: results
 
 windowing:
-  # DESIGN CHOICE (not a claim of optimality): 60 s non-overlapping windows.
+  # FROZEN (D-021): 60 s non-overlapping windows on a TIME-ONLY grid anchored at
+  # synchronised pickle t=0 per participant. Never restarted at label boundaries.
   length_s: 60
   step_s: 60
+  anchor: pickle_t0
+  grid_uses_labels: false      # must stay false (invariant #19)
+  # Eligibility for the primary binary task is decided AFTER the grid exists:
+  # a window is eligible only if its full interval is homogeneous raw code 1 or 2.
+  eligibility_rule: homogeneous_full_window
+  mixed_window_policy: keep_in_provenance_mark_ineligible   # never majority-vote or relabel
   # Planned sensitivity analysis; run only after the central pipeline works.
   sensitivity_lengths_s: [30, 60, 120]
 
@@ -40,7 +47,8 @@ features:
 
 evaluation:
   # NON-NEGOTIABLE: participant-level outer holdout.
-  outer_split: leave-one-participant-out   # TODO: confirm LOPO vs grouped k-fold after participant count is verified
+  # T-04 is NOT decided. Deliberately null: no executable default may masquerade as an agreed choice.
+  outer_split: null                        # TODO T-04: leave-one-participant-out | grouped-k-fold (15 participants)
   inner_split: grouped-k-fold              # grouped by participant, within training participants only
   inner_folds: null                        # TODO
   # Random-row splits may be run ONLY as a clearly-labelled diagnostic, never as a primary result.

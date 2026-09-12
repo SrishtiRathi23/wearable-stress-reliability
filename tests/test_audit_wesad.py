@@ -288,3 +288,75 @@ def test_real_release_audit_matches_committed_manifest():
     assert aw.classify(rec) == "apparently_usable"
     assert rec["pkl_vs_raw_respiban"]["crop_offset_s"] == committed["participants"]["S2"]["pkl_vs_raw_respiban"]["crop_offset_s"]
     assert rec["labels"]["per_code"] == committed["participants"]["S2"]["labels"]["per_code"]
+
+
+# --- Phase-1 closeout hardening (independent review) --------------------------
+
+
+def test_non_integer_labels_are_rejected_not_truncated(tmp_path: Path):
+    root = tmp_path / "W"
+    make_fake_wesad(root, "S2", label_override=lambda l: l.astype(np.float64) + np.where(np.arange(l.size) == 5, 0.5, 0.0))
+    rec = aw.audit_subject(root, "S2")
+    assert rec["labels"]["integer_valued"] is False and rec["labels"]["per_code"] == {}
+    assert "label_vector_not_integer_valued" in rec["flags"]
+    assert aw.classify(rec).startswith("unusable")
+
+
+def test_integral_float_labels_are_accepted(tmp_path: Path):
+    root = tmp_path / "W"
+    make_fake_wesad(root, "S2", label_override=lambda l: l.astype(np.float64))
+    rec = aw.audit_subject(root, "S2")
+    assert rec["labels"]["integer_valued"] is True and rec["labels"]["codes_present"] == [0, 1, 2, 3, 4]
+
+
+def test_ecg_match_uses_absolute_tolerance_and_reports_max_error(fake_wesad: Path):
+    d = aw.load_subject_pickle(fake_wesad / "S2" / "S2.pkl", trusted_root=fake_wesad)
+    ecg = d["signal"]["chest"]["ECG"]
+    ok = aw.raw_chest_crop_offset(fake_wesad / "S2" / "S2_respiban.txt", ecg)
+    assert ok["full_length_match"] and ok["max_abs_error_mV"] == 0.0
+    # a relative-scale perturbation (1e-6 relative) would pass rtol=1e-5 but must fail rtol=0/atol=1e-9
+    perturbed = ecg.copy()
+    perturbed[3000, 0] += perturbed[3000, 0] * 1e-6 + 1e-8
+    bad = aw.raw_chest_crop_offset(fake_wesad / "S2" / "S2_respiban.txt", perturbed)
+    assert bad["matched"] and bad["full_length_match"] is False and bad["max_abs_error_mV"] > 1e-9
+
+
+def test_wrist_acc_integrality_checked_before_integer_compare(fake_wesad: Path):
+    d = aw.load_subject_pickle(fake_wesad / "S2" / "S2.pkl", trusted_root=fake_wesad)
+    acc = d["signal"]["wrist"]["ACC"].copy()
+    acc[10, 1] += 0.4  # would silently round/truncate to a "match" if cast to int first
+    res = aw.raw_wrist_crop_offset(fake_wesad / "S2" / "S2_E4_Data.zip", acc)
+    assert res["matched"] is False and res["pkl_values_integral"] is False
+
+
+def test_failed_crop_match_marks_alignment_unverified(tmp_path: Path):
+    root = tmp_path / "W"
+    folder = make_fake_wesad(root, "S2")
+    # corrupt the raw RespiBAN ECG column so the pkl cannot be located in it
+    lines = (folder / "S2_respiban.txt").read_text(encoding="utf-8").splitlines()
+    out = []
+    for ln in lines:
+        if ln.startswith("#"):
+            out.append(ln)
+        else:
+            parts = ln.split("\t")
+            parts[2] = "0"
+            out.append("\t".join(parts))
+    (folder / "S2_respiban.txt").write_text("\n".join(out) + "\n", encoding="utf-8")
+    rec = aw.audit_subject(root, "S2")
+    assert "pkl_chest_not_found_in_raw_respiban" in rec["flags"]
+    assert "schedule_alignment_unverified" in rec["flags"]
+    assert isinstance(rec["schedule_vs_labels"], str) and rec["schedule_vs_labels"].startswith("UNVERIFIED")
+    assert "device_clock_check" not in rec
+    assert aw.classify(rec).startswith("questionable")
+
+
+def test_unexpected_channel_count_flagged(fake_wesad: Path):
+    pkl_path = fake_wesad / "S2" / "S2.pkl"
+    d = aw.load_subject_pickle(pkl_path, trusted_root=fake_wesad)
+    d["signal"]["wrist"]["ACC"] = d["signal"]["wrist"]["ACC"][:, :2]
+    with open(pkl_path, "wb") as fh:
+        pickle.dump(d, fh)
+    rec = aw.audit_subject(fake_wesad, "S2")
+    assert "wrist.ACC_channels_2_ne_3" in rec["flags"]
+    assert aw.classify(rec).startswith("unusable")

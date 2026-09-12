@@ -15,9 +15,11 @@ dataset:
   archive_sha256: "5e15d2606adf16d819ba535c1786d92e94bae5ff5392f7ae01fb63f9938fd71c"   # FACT: locally computed, see wesad_source.json
   checksum_baseline: data/manifests/raw_checksums_wesad.json
 
-# Which device stream to use for the central experiment. Both are complete and
-# aligned for all 15 participants (FACT); choosing is a DESIGN decision (T-01).
-device: null                 # TODO: "wrist" (E4) | "chest" (RespiBAN) | both
+# FROZEN (D-021, resolves T-01): wrist Empatica E4 is the primary device; chest
+# RespiBAN is optional sensitivity only. Shared hardware with the Nurse data
+# does not imply shared domain or label validity.
+device: wrist
+sensitivity_device: chest    # optional; not required for minimum project completion
 
 signals:
   # FACT (readme II.1/II.2 + audit): names are the pickle keys.
@@ -42,13 +44,17 @@ labels:
     5: ignore_reading_block   # readme: "should be ignored"; empirically the bRead block
     6: ignore_reading_block   # empirically sRead
     7: ignore_reading_block   # empirically fRead
-  # PROPOSED initial research mapping (DESIGN, awaiting approval after audit review):
-  positive_condition: stress        # code 2
-  negative_condition: baseline      # code 1
-  # Proposed exclusions: 0 (transient is unknown, never non-stress), 3, 4, 5, 6, 7.
-  excluded_conditions: null         # TODO: approve [0, 3, 4, 5, 6, 7] or amend
-  # FACT: label runs are the quest.csv protocol intervals trimmed by 10 s at each end.
-  trim_relative_to_quest_s: 10.0
+  # FROZEN (D-021): primary binary reference = "baseline versus protocol stress".
+  positive_condition: protocol_stress   # raw code 2
+  negative_condition: baseline          # raw code 1 (a reference condition, not proof of no psychological stress)
+  positive_code: 2
+  negative_code: 1
+  # Ineligible for the primary binary target; NEVER converted to baseline/non-stress.
+  ineligible_codes: [0, 3, 4, 5, 6, 7]
+  preserve_raw_label: true
+  # EMPIRICAL (not documented by the release): label runs are consistent with the
+  # quest.csv intervals trimmed by ~10 s at each boundary, within one 700-Hz sample.
+  trim_relative_to_quest_s_approx: 10.0
 
 participants:
   # FACT (readme I.2 + audit): 15 present, S1/S12 absent from the release.
@@ -62,12 +68,16 @@ participants:
 
 blocks:
   # FACT (audit): one contiguous baseline run (1140-1198 s) and one contiguous
-  # stress run (615-725 s) per participant -> 19 and 10-12 sixty-second windows.
+  # stress run (615-725 s) per participant.
   baseline_runs_per_participant: 1
   stress_runs_per_participant: 1
+  # Window counts under different construction rules (see dataset_notes.md):
+  #   434 = homogeneous windows on the frozen time-only grid at pkl t=0 (282 + 152), 60 mixed ineligible
+  #   445 = windows restarted at run boundaries (uses label timing; NOT the primary frame)
 
 episodes:
-  # How label-observation selection units ("episodes") are defined on WESAD.
-  # OPEN DESIGN QUESTION (T-05) - the audit confirms protocol blocks are too
-  # coarse (2 per participant). See docs/known_issues.md KI-05.
-  definition: null           # TODO
+  # Selection UNIT / grouping on the frozen time-only grid: OPEN (T-05).
+  # Protocol blocks are an extremely coarse, condition-confounded annotation
+  # model (KI-05). Also open: budgets, random-mask repetitions, budget charging
+  # for windows outside baseline/stress, the targeted selector (T-06, T-07).
+  definition: null           # TODO T-05
