@@ -119,17 +119,30 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 - **Rationale:** Independent review found an absolute `-e file:///E:/...` entry that made the lock file machine-specific.
 - **Status:** agreed
 
+### D-018 - WESAD release provenance and raw baseline (Phase 1)
+- **Date:** 2026-09-12
+- **Category:** ENGINEERING / FACT
+- **Decision:** The project uses the official WESAD release downloaded from the University of Siegen public share (chain: UCI DOI 10.24432/C57K5T -> Siegen page -> sciebo `HGdUkoNlW1Ub0Gx`), `WESAD.zip` 2,249,444,501 bytes, locally computed SHA-256 `5e15d260...38fd71c` (no publisher checksum exists). Extracted unmodified to `data/raw/wesad/WESAD/`; the ZIP is retained. Checksum baseline committed as `data/manifests/raw_checksums_wesad.json` (77 files). Any future replacement of this baseline is a dataset-version change requiring a new decision entry.
+- **Status:** agreed
+
+### D-019 - WESAD factual findings adopted from the structural audit (resolves T-02; factual part of T-03)
+- **Date:** 2026-09-12
+- **Category:** FACT (verified; see `docs/dataset_notes.md` for provenance of each item)
+- **Decision:** The following are treated as facts: 15 participants (S2-S11, S13-S17), all structurally usable, none excluded; label codes 0-7 with readme meanings, no undocumented codes; label rate 700 Hz on the RespiBAN timeline; chest 700 Hz x6 modalities, wrist ACC 32 / BVP 64 / EDA 4 / TEMP 4 Hz; the pkl is an exact crop of both raw device files; label runs equal `quest.csv` intervals trimmed by 10 s at each end; exactly one contiguous baseline run (1140-1198 s) and one stress run (615-725 s) per participant. Recorded in `configs/wesad.yaml`.
+- **Not decided here:** device choice (T-01), split strategy (T-04), selection unit (T-05), budget (T-06), detector (T-07), and the binary label mapping / exclusion list (proposed: positive = 2, negative = 1, excluded = {0, 3, 4, 5, 6, 7}) which remains a DESIGN proposal until approved.
+- **Status:** agreed (facts); mapping provisional
+
 ---
 
 ## Open decisions (TODO before the affected stage)
 
 | ID | Decision needed | Blocks | Where |
 |---|---|---|---|
-| T-01 | WESAD device stream (wrist / chest / both) | feature extraction | `configs/wesad.yaml: device` |
-| T-02 | WESAD raw label codes and excluded conditions (verify against readme) | labels | `configs/wesad.yaml: labels` |
-| T-03 | Usable WESAD participants and any exclusions with reasons | splits | audit -> `data/manifests/` |
+| T-01 | WESAD device stream (wrist / chest / both). Audit: both complete and aligned for all 15; no structural reason to prefer either. Engineer's recommendation (not adopted): wrist as primary for comparability with the Nurse E4 data, chest as a sensitivity analysis | feature extraction | `configs/wesad.yaml: device` |
+| T-02 | ~~Raw label codes~~ RESOLVED as FACT (D-019). Remaining: approve the binary mapping and exclusion list {0,3,4,5,6,7} | labels | `configs/wesad.yaml: labels.excluded_conditions` |
+| T-03 | ~~Usable participants~~ RESOLVED as FACT: 15, none structurally excluded (D-019). Remaining DESIGN question: whether readme caveats (S6/S15 weak stress induction; S2/S17 chest Temp) warrant any pre-declared handling | splits | `docs/dataset_notes.md` |
 | T-04 | LOPO vs grouped k-fold outer split; inner fold count | baseline | `configs/base.yaml: evaluation` |
-| T-05 | Episode / selection-unit definition on WESAD; candidate generation must itself be label-independent, not just the final mask function | Study A | `research_protocol.md` S5; KI-06 |
+| T-05 | Episode / selection-unit definition on WESAD; candidate generation must itself be label-independent, not just the final mask function. Audit CONFIRMS KI-05: exactly 1 baseline + 1 stress block per participant, so protocol-block selection is degenerate. Engineer's recommendation (not adopted): fixed-length contiguous pseudo-episodes (e.g. 3-5 min) as the primary unit with detector-proposed episodes as a comparison | Study A | `research_protocol.md` S5; KI-05; KI-06 |
 | T-06 | Budget unit and budget grid | Study A/B/C | `configs/base.yaml: observation_policies` |
 | T-07 | Detector definition for `detector_triggered` | Study A | `research_protocol.md` S5 |
 | T-08 | Study B specification: development roles (which participants play calibration/threshold/selection roles), detector access in development, coverage constraint or loss, tie handling, comparator; then the regret formula | Study B | `research_protocol.md` S6; KI-18 |

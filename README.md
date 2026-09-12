@@ -41,7 +41,7 @@ The full protocol, hypotheses, and open decisions are in [`docs/research_protoco
 
 ## Current status
 
-**Repository bootstrap only.** No dataset has been inspected, no preprocessing written, no model trained, no result produced. Next step (pending approval): WESAD audit (`src/wsr/data/audit_wesad.py`) to verify participants, signals, sampling rates and label codes against the official documentation.
+**Phase 1 complete (WESAD acquisition + structural audit).** The official WESAD release is downloaded, checksum-baselined and structurally audited (`src/wsr/data/audit_wesad.py` -> `data/manifests/wesad_audit.json`; narrative in `docs/dataset_notes.md`). No preprocessing, features, models or results yet. Next step (pending approval): design decisions T-01/T-05 and the binary label mapping, then windowing.
 
 ## Setup
 

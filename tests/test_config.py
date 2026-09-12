@@ -37,8 +37,12 @@ def test_find_todos_reports_unresolved_paths():
     assert find_todos(cfg) == ["a", "b.c"]
 
 
-def test_wesad_config_still_has_open_decisions():
-    # Documents the current state: these must be resolved before modelling.
-    todos = find_todos(load_config("wesad"))
-    assert "device" in todos
-    assert "labels.raw_codes" in todos
+def test_wesad_config_open_and_resolved_decisions():
+    # Documents the current state: design TODOs still open, audit facts filled in.
+    cfg = load_config("wesad")
+    todos = find_todos(cfg)
+    assert "device" in todos  # T-01
+    assert "labels.excluded_conditions" in todos  # mapping approval pending
+    assert "episodes.definition" in todos  # T-05
+    assert "labels.raw_codes" not in todos and cfg["labels"]["raw_codes"][2] == "stress"  # T-02 resolved as fact
+    assert len(cfg["participants"]["all"]) == 15 and cfg["participants"]["excluded"] == []

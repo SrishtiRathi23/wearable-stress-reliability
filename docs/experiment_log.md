@@ -61,3 +61,19 @@ Runners under `src/wsr/experiments/` should write a machine-readable copy of the
 - Dataset: none
 - Notes: Repository bootstrap only. No data inspected, no models trained, no results produced.
 - Interpretation: n/a
+
+### 2026-09-12_wesad_structural_audit
+
+- Date/time: 2026-09-12
+- Git commit: (see commit "WESAD Phase 1: structural audit")
+- Dataset: wesad (archive sha256 5e15d260...38fd71c; baseline raw_checksums_wesad.json verified unchanged before the audit)
+- Participants used: S2-S11, S13-S17 (15); exclusions: none
+- Config: none (audit is config-free); command: `python -m wsr.data.audit_wesad`
+- Random seed: n/a (deterministic)
+- Model / calibration / abstention / observation policy: none (structural audit only, no predictive number produced)
+- Confirmatory or exploratory: n/a
+- Result artifacts: data/manifests/wesad_audit.json (tracked); results/tables/wesad_{participant,signal,label,blocks}_audit.csv (regenerable, not tracked)
+- Runtime: ~82 s CPU
+- Notes: verified participants, files, signals, rates, label codes, contiguous runs, pkl-vs-raw crop for both devices, quest.csv alignment (10-s trim), device clock consistency.
+- Anomalies: none structural. Documentation discrepancies listed in docs/dataset_notes.md.
+- Interpretation: all 15 participants structurally usable; protocol-block selection unit confirmed degenerate (KI-05).

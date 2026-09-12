@@ -1,44 +1,73 @@
 # ---------------------------------------------------------------------------
 # WESAD - primary controlled benchmark and primary label-observation experiment.
-# Every value below that is marked TODO or UNVERIFIED must be checked against the
-# official WESAD readme and the actual files by src/wsr/data/audit_wesad.py
-# before it is used.
+#
+# Values marked FACT were verified on 2026-09-12 against the release readme
+# (WESAD/wesad_readme.pdf) and the files themselves (src/wsr/data/audit_wesad.py,
+# results in data/manifests/wesad_audit.json; narrative in docs/dataset_notes.md).
+# Values marked TODO are DESIGN decisions still awaiting approval.
 # ---------------------------------------------------------------------------
 
 dataset:
   name: wesad
   raw_dir: data/raw/wesad
-  citation: "Schmidt et al. 2018, ICMI"
+  release_dir: data/raw/wesad/WESAD
+  citation: "Schmidt et al. 2018, ICMI, doi:10.1145/3242969.3242985"
+  archive_sha256: "5e15d2606adf16d819ba535c1786d92e94bae5ff5392f7ae01fb63f9938fd71c"   # FACT: locally computed, see wesad_source.json
+  checksum_baseline: data/manifests/raw_checksums_wesad.json
 
-# Which device stream to use. The Nurse dataset is wrist (Empatica E4), so the
-# wrist stream is the natural comparator, but this is an unresolved decision.
+# Which device stream to use for the central experiment. Both are complete and
+# aligned for all 15 participants (FACT); choosing is a DESIGN decision (T-01).
 device: null                 # TODO: "wrist" (E4) | "chest" (RespiBAN) | both
 
 signals:
-  # Availability and sampling rates to be VERIFIED by the audit, not assumed.
-  wrist: null                # TODO (expected: ACC, BVP, EDA, TEMP)
-  chest: null                # TODO (expected: ACC, ECG, EMG, EDA, Temp, Resp)
-  sampling_rates_hz: null    # TODO: fill from audit
+  # FACT (readme II.1/II.2 + audit): names are the pickle keys.
+  chest: [ACC, ECG, EMG, EDA, Temp, Resp]
+  wrist: [ACC, BVP, EDA, TEMP]
+  sampling_rates_hz:
+    chest: {ACC: 700, ECG: 700, EMG: 700, EDA: 700, Temp: 700, Resp: 700}
+    wrist: {ACC: 32, BVP: 64, EDA: 4, TEMP: 4}
+    label: 700
+  # FACT: chest Temp documented unreliable (sensor loose) for S2 and S17.
+  known_unreliable:
+    chest.Temp: [S2, S17]
 
 labels:
-  # Raw label integers as stored in the WESAD pickle files.
-  # UNVERIFIED - copy exactly from the official readme during the audit.
-  raw_codes: null            # TODO
-  # Binary task used for the central experiment.
-  # DESIGN CHOICE: baseline vs protocol stress only. Other states excluded
-  # initially; any later inclusion needs a pre-declared mapping in docs/decisions.md.
-  positive_condition: stress
-  negative_condition: baseline
-  excluded_conditions: null  # TODO: list explicitly after audit (e.g. transient, amusement, meditation)
+  # FACT (readme II.3, confirmed by audit; no undocumented code occurs):
+  raw_codes:
+    0: transient_undefined
+    1: baseline
+    2: stress
+    3: amusement
+    4: meditation
+    5: ignore_reading_block   # readme: "should be ignored"; empirically the bRead block
+    6: ignore_reading_block   # empirically sRead
+    7: ignore_reading_block   # empirically fRead
+  # PROPOSED initial research mapping (DESIGN, awaiting approval after audit review):
+  positive_condition: stress        # code 2
+  negative_condition: baseline      # code 1
+  # Proposed exclusions: 0 (transient is unknown, never non-stress), 3, 4, 5, 6, 7.
+  excluded_conditions: null         # TODO: approve [0, 3, 4, 5, 6, 7] or amend
+  # FACT: label runs are the quest.csv protocol intervals trimmed by 10 s at each end.
+  trim_relative_to_quest_s: 10.0
 
 participants:
-  # Fill from the audit. Any exclusion must be logged with a reason in
-  # data/manifests/exclusions_wesad.csv.
-  all: null                  # TODO
+  # FACT (readme I.2 + audit): 15 present, S1/S12 absent from the release.
+  all: [S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S13, S14, S15, S16, S17]
+  absent_from_release: [S1, S12]
+  # No structural exclusion proposed. Interpretation caveats (readme notes) are
+  # listed in docs/dataset_notes.md and must not become exclusions without a
+  # pre-declared rule logged in docs/decisions.md.
   excluded: []
   exclusion_log: data/manifests/exclusions_wesad.csv
 
+blocks:
+  # FACT (audit): one contiguous baseline run (1140-1198 s) and one contiguous
+  # stress run (615-725 s) per participant -> 19 and 10-12 sixty-second windows.
+  baseline_runs_per_participant: 1
+  stress_runs_per_participant: 1
+
 episodes:
   # How label-observation selection units ("episodes") are defined on WESAD.
-  # This is an OPEN DESIGN QUESTION - see docs/research_protocol.md, Study A.
+  # OPEN DESIGN QUESTION (T-05) - the audit confirms protocol blocks are too
+  # coarse (2 per participant). See docs/known_issues.md KI-05.
   definition: null           # TODO

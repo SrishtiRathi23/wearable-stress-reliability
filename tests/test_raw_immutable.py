@@ -159,7 +159,10 @@ def test_cli_rejects_replace_flag_on_verify(raw):
 def test_real_raw_tree_matches_baseline(dataset: str):
     dataset_dir = DATA_RAW / dataset
     manifest = integrity.manifest_path(dataset_dir, MANIFESTS)
+    has_data = dataset_dir.is_dir() and bool(integrity.hash_tree(dataset_dir)) if not manifest.is_file() else True
     if not manifest.is_file():
-        pytest.skip(f"no checksum baseline for {dataset} yet (run: python -m wsr.utils.integrity snapshot {dataset_dir})")
+        if has_data:
+            pytest.fail(f"raw {dataset} data is present but no checksum baseline is committed; run: python -m wsr.utils.integrity snapshot {dataset_dir}")
+        pytest.skip(f"{dataset} not downloaded yet")
     diff = integrity.verify(dataset_dir, MANIFESTS)
     assert integrity.is_unchanged(diff), f"raw {dataset} tree changed relative to committed baseline: {diff}"

@@ -30,17 +30,30 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 - **Mitigation:** participant is the unit of inference; window-level numbers are descriptive.
 - **Status:** accepted; enforced by reporting rules
 
-### KI-05 WESAD selection-unit degeneracy
+### KI-05 WESAD selection-unit degeneracy - CONFIRMED by audit
 - **Severity:** HIGH for Study A
-- **Issue:** If episodes are defined as WESAD protocol blocks, there are only a handful per participant (roughly one baseline, one stress block of the conditions used). Targeted selection then has almost nothing to choose among and Study A cannot show a selection effect regardless of whether one exists.
-- **Plan:** decide episode definition (T-05) after the audit reports block durations; options listed in `research_protocol.md` Section 5.
-- **Status:** open
+- **Issue:** If episodes are defined as WESAD protocol blocks, targeted selection has almost nothing to choose among and Study A cannot show a selection effect regardless of whether one exists.
+- **Evidence (audit 2026-09-12, `data/manifests/wesad_audit.json`):** every participant has exactly **one** contiguous baseline run (1140-1198 s, 19 x 60-s windows) and exactly **one** contiguous stress run (615-725 s, 10-12 windows). Block-level selection = choosing among 2 blocks per person, 30 across the dataset. Window-level material: 445 windows total (285 baseline, 160 stress).
+- **Plan:** decide T-05 among (a) fixed-length contiguous pseudo-episodes inside each block, (b) detector-proposed episodes, (c) window-level selection with contiguity constraints as a diagnostic. Whatever is chosen, the number of selectable units per participant is small (e.g. 3-min pseudo-episodes give ~6 baseline + ~3-4 stress per person), so budget grids must be coarse and results reported per participant.
+- **Status:** open (design decision pending)
 
 ### KI-06 Candidate generation and masks could use test labels by accident
 - **Severity:** HIGH (invariant #5)
 - **Issue:** "Prefer longer events" is only valid if event boundaries come from a detector or time structure. If boundaries come from the protocol labels, the mask depends on test labels. Independent review (2026-09-12) sharpened this: **candidate generation itself must be label-independent**. Keeping `y_test` out of the final mask function is insufficient if the candidate episodes, their boundaries, durations, or detector scores were computed upstream with any access to held-out labels.
 - **Plan:** the whole candidate-construction pipeline (episode boundaries, detector scores, durations, ranking) receives only signals/features/time indices from the held-out participant and models trained without that participant. The future leakage test in `tests/test_label_masks.py` must **rebuild candidate construction from the beginning** under permuted held-out labels and assert identical candidates and masks; permuting labels only after candidate metadata exists would not detect upstream leakage.
 - **Status:** open until implemented
+
+### KI-19 WESAD code 0 (transient) is ~45 % of the recording and is not "non-stress"
+- **Severity:** MEDIUM
+- **Issue:** ~40 min per participant carries label 0 ("not defined / transient"), plus ~2.7 min of reading blocks (5/6/7). These periods have no verified affective state. Treating them as baseline/negative would be the WESAD analogue of the Nurse invariant violation.
+- **Plan:** exclude from the binary task (proposed mapping); if ever used (e.g. as an "unlabelled pool" for a Study A variant), label them `unknown`, never negative, and pre-declare the analysis.
+- **Status:** open (mapping approval pending)
+
+### KI-20 Interpretation caveats on specific WESAD participants
+- **Severity:** LOW-MEDIUM
+- **Issue:** Readme notes: S6 and S15 report the TSST did not stress them / they did not believe the cover story; S2 and S17 have a loose chest temperature sensor; S5 may have slept in meditation; S3 baseline in a sunny workplace; S8/S16 felt cold during stress. None are structural defects and none justify exclusion by themselves.
+- **Plan:** keep all 15 (no exclusion). If a per-participant analysis later shows these subjects as outliers, that is reported, not removed. Any chest-temperature feature must carry the S2/S17 quality flag.
+- **Status:** accepted
 
 ## Modelling
 
