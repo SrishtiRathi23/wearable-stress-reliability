@@ -82,6 +82,15 @@ FACT `[audit]` - every participant has **exactly one contiguous baseline run and
 - Self-reports and readme notes indicate the stress manipulation may have been weak for S6 and S15 (FACT that the notes exist; whether it affects physiology is not assessed here and must not be used to drop them without a pre-declared rule).
 - Code 0 ("transient/undefined") is ~40 min per participant. It is **not** verified non-stress; it must be treated as excluded/unknown, never as a negative class (same logic as the Nurse invariant).
 
+### Phase-2 canonical window table `[build_features, 2026-09-12]`
+
+- Built by `python -m wsr.features.build_features` from the verified raw tree (loader re-verifies the baseline and every pickle hash; D-022). Manifest: `data/manifests/wesad_windows_60s_manifest.json` (table SHA-256 `f786c304c5884a0d...`, counts, parameters, package versions). The parquet itself is regenerable and not committed.
+- **Frame:** 1442 complete 60-s windows on the time-only grid at pkl t=0 across all 15 participants (87-117 per participant); omitted tails 3-51 s per participant (never padded).
+- **Reference annotation (after the grid):** eligible baseline **282**, eligible protocol-stress **152** (= 434, matching the independently reviewed expectation); homogeneous-other ineligible 785 (code 0: 536, code 3: 79, code 4: 170; no complete window is homogeneous 5/6/7); mixed windows 223 (60 of them touch baseline/stress). Nothing was majority-voted or relabelled.
+- **Structural quality:** every window has the expected native sample counts (1920/3840/240/240), all finite, no constant signals, zero feature-extraction errors; EDA decomposition and pulse detection ran for all 15. `q_acc_clipped` 12.3 % (KI-22); `q_eda_below_plausible` 0 %; `q_temp_out_of_range` 0 %.
+- **Missingness:** only `eda_scr_amp_mean` / `eda_scr_amp_max` (88 windows with zero SCR-like peaks; by contract null, not zero). All other features complete.
+- **Feature ranges (sanity, no label involvement):** ACC magnitude median 0.99 g (rails at +-2 g); EDA 0.05-15.9 uS; TEMP 29.0-36.0 degC; raw BVP a.u. Beat/HR columns are provisional (KI-21).
+
 ### Questionnaires `[readme III.2]`
 
 - After each of the five conditions: PANAS (24 items incl. 4 added), STAI-6, SAM valence/arousal; after stress additionally SSSQ-6. Stored in `S<id>_quest.csv`. Not parsed by the audit (not needed for the structural study); available for later supporting analysis.

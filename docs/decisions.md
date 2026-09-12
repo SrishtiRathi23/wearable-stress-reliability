@@ -165,6 +165,15 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 - **Rule:** candidate construction and window boundaries for the primary Study-A frame must be independent of held-out reference labels. Future selectors may use only explicitly permitted time-, signal- or model-derived information. The fields `raw_label`, `binary_analysis_label`, `eligibility`, and protocol-state boundaries are never selector inputs. Reference labels are used only afterwards to define the evaluation target, determine scoring eligibility, and compute full-reference comparison metrics. The selector is not implemented yet.
 - **Status:** agreed (invariant #19 in PROJECT_CONTEXT.md)
 
+### D-024 - Phase-2 feature set, processing parameters and provisional HR status
+- **Date:** 2026-09-12
+- **Category:** DESIGN CHOICE (signal processing; chosen without reference to labels)
+- **Decision:** The canonical Phase-2 table `data/processed/wesad_windows_60s.parquet` (schema v1.0.0, `data/manifests/wesad_feature_schema.json`) carries 117 columns: 18 provenance, 8 reference-label, 24 quality, 67 numeric window features of which **59 are `model_feature: true`** (ACC 27, EDA 17, BVP raw statistics 7, TEMP 8) and **8 are `feature_provisional` (model_feature false)**: `bvp_beat_count`, `bvp_valid_ibi_count`, `bvp_beat_coverage`, `hr_mean/median/std/min/max`.
+- **Processing (all deterministic, recording-level where filtering is involved, parameters in `configs/base.yaml: features`, PROVISIONAL):** ACC counts / 64 -> g, no filtering; EDA tonic = zero-phase Butterworth low-pass 0.05 Hz order 2 over the whole recording, phasic = raw - tonic, SCR-like peaks = phasic prominence >= 0.01 uS with >= 1 s spacing; BVP band-pass 0.5-8 Hz order 3, peaks with >= 0.33 s spacing and prominence >= 0.2 x MAD scale, IBIs valid in [0.33, 2.0] s, HR summaries need >= 10 valid IBIs and >= 50 % coverage; TEMP summaries only. Quality flags (provisional thresholds): ACC clip |count| >= 127, EDA < 0.01 uS, TEMP outside 20-45 degC, constant-signal eps 1e-9.
+- **Why HR is provisional:** on the real release the in-house detector yields 30-45 % successive beat-to-beat HR changes > 20 bpm and `hr_max` pinned at the distance floor (174.5 bpm) in many windows (KI-21). Rather than tune a detector without a beat reference, the columns stay in the table for transparency and are excluded from `model_feature` until a validated detector or an IBI-consistency gate is approved. HRV remains disabled.
+- **Not decided here:** anything in T-04..T-10; whether provisional HR columns are ever promoted.
+- **Status:** agreed (feature set frozen for Phase 3 unless amended)
+
 ---
 
 ## Open decisions (TODO before the affected stage)

@@ -16,4 +16,5 @@ scikit-learn>=1.4
 pyyaml>=6.0
 joblib>=1.3
 matplotlib>=3.8
+pyarrow>=17          # parquet feature tables (Phase 2)
 pytest>=8.0

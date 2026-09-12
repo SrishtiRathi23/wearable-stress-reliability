@@ -55,6 +55,17 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 - **Plan:** keep all 15 (no exclusion). If a per-participant analysis later shows these subjects as outliers, that is reported, not removed. Any chest-temperature feature must carry the S2/S17 quality flag.
 - **Status:** accepted
 
+### KI-21 In-house BVP pulse detector is not beat-accurate on wrist PPG
+- **Severity:** MEDIUM (feature quality; no effect on the candidate frame or labels)
+- **Issue:** The Phase-2 detector (band-pass + `find_peaks` with distance/prominence floors) produces plausible median HR (~82 bpm) but implausible within-window variability: median `hr_std` ~27 bpm, `hr_max` at the 0.33-s floor (174.5 bpm) in many windows, and 30-45 % of successive beat-to-beat HR changes > 20 bpm on S2/S10 under three parameter settings. Wrist PPG with motion is known to be hard; a validated algorithm or an IBI-consistency gate is needed.
+- **Mitigation:** beat/HR columns are `feature_provisional` (model_feature false) in the schema (D-024). Raw BVP statistics remain features. Options for later (all label-free): stricter IBI-consistency gating per window, a validated PPG detector (e.g. from NeuroKit2, with version pinned), or dropping HR entirely. Any change is a schema-version bump and a decision entry.
+- **Status:** open
+
+### KI-22 ACC clipping flag fires on 12.3 % of windows
+- **Severity:** LOW (informational)
+- **Issue:** `q_acc_clipped` (any |count| >= 127, i.e. at the +-2 g rail) is True for 12.3 % of the 1442 windows. This is expected during vigorous movement and is not a defect; it is recorded so that activity-related analyses can stratify or check sensitivity to clipped windows. The 127-count threshold is provisional.
+- **Status:** accepted (flag only)
+
 ## Modelling
 
 ### KI-07 Activity confounding

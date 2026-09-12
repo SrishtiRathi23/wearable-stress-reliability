@@ -1,7 +1,3 @@
-# Exact third-party versions resolved on 2026-09-12 (CPython 3.12.13, Windows).
-# Regenerate with: uv pip freeze --python .venv --exclude-editable
-# Reconstruct with:  uv pip install --python .venv -r requirements-lock.txt -e .
-# The local package (wsr) is deliberately NOT listed here; install it with -e .
 cloudpickle==3.1.2
 colorama==0.4.6
 contourpy==1.4.0
@@ -17,6 +13,7 @@ packaging==26.3
 pandas==3.0.5
 pillow==12.3.0
 pluggy==1.6.0
+pyarrow==25.0.1
 pygments==2.21.0
 pyparsing==3.3.2
 pytest==9.1.1

@@ -77,3 +77,19 @@ Runners under `src/wsr/experiments/` should write a machine-readable copy of the
 - Notes: verified participants, files, signals, rates, label codes, contiguous runs, pkl-vs-raw crop for both devices, quest.csv alignment (10-s trim), device clock consistency.
 - Anomalies: none structural. Documentation discrepancies listed in docs/dataset_notes.md.
 - Interpretation: all 15 participants structurally usable; protocol-block selection unit confirmed degenerate (KI-05).
+
+### 2026-09-12_wesad_phase2_feature_table
+
+- Date/time: 2026-09-12
+- Git commit: (see Phase-2 commit; manifest records the build commit and dirty flag)
+- Dataset: wesad (raw baseline verified by the loader before every pickle; raw manifest sha256 438a1bb3e38b23d1...)
+- Participants used: all 15; exclusions: none
+- Config: configs/base.yaml (windowing, features, quality) + configs/wesad.yaml (device wrist, labels); command: `python -m wsr.features.build_features`
+- Random seed: n/a (no stochastic processing)
+- Model / calibration / abstention / observation policy: none - no predictive number produced
+- Confirmatory or exploratory: n/a (data preparation)
+- Result artifacts: data/processed/wesad_windows_60s.parquet (sha256 f786c304c5884a0de157031a95817a448809fa27a38297fded6b6d4693afcb0b, 1442 rows x 117 cols, not committed); data/manifests/wesad_feature_schema.json; data/manifests/wesad_windows_60s_manifest.json; results/tables/wesad_windows_60s_summary.csv
+- Runtime: ~60 s CPU (incl. 19 GB raw-tree verification)
+- Notes: time-only 60-s grid at t=0; eligibility after the grid; 434 eligible (282 + 152) recomputed, matching the review expectation.
+- Anomalies: in-house pulse detector not beat-accurate (KI-21) -> HR columns provisional; ACC clipping flag 12.3 % (KI-22).
+- Interpretation: feature table is model-ready for participant-independent pipelines; no outcome-driven engineering was performed.

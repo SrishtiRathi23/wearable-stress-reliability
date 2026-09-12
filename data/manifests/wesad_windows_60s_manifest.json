@@ -1,0 +1,615 @@
+{
+ "dataset": "wesad",
+ "table_path": "data\\processed\\wesad_windows_60s.parquet",
+ "table_sha256": "f786c304c5884a0de157031a95817a448809fa27a38297fded6b6d4693afcb0b",
+ "n_rows": 1442,
+ "n_columns": 117,
+ "n_model_features": 59,
+ "schema_version": "1.0.0",
+ "schema_path": "data\\manifests\\wesad_feature_schema.json",
+ "generated_utc": "2026-09-12T14:24:20+00:00",
+ "git": {
+  "commit": "2edb6dc192a6c160c39316690ce40d8162de7e5e",
+  "dirty_tree": true
+ },
+ "raw_checksum_manifest": {
+  "path": "E:\\Tinaas Minor Project\\data\\manifests\\raw_checksums_wesad.json",
+  "sha256": "438a1bb3e38b23d13ee15e71b2fe92a49317c61ba534a3143621c58a6b310848",
+  "n_files": 77
+ },
+ "config_snapshot": {
+  "windowing": {
+   "length_s": 60,
+   "step_s": 60,
+   "anchor": "pickle_t0",
+   "grid_uses_labels": false,
+   "eligibility_rule": "homogeneous_full_window",
+   "mixed_window_policy": "keep_in_provenance_mark_ineligible",
+   "sensitivity_lengths_s": [
+    30,
+    60,
+    120
+   ]
+  },
+  "features": {
+   "families": [
+    "activity",
+    "eda",
+    "cardiac",
+    "temperature"
+   ],
+   "acc": {
+    "counts_per_g": 64
+   },
+   "eda": {
+    "tonic_lowpass_hz": 0.05,
+    "filter_order": 2,
+    "scr_min_amplitude_us": 0.01,
+    "scr_min_distance_s": 1.0
+   },
+   "bvp": {
+    "bandpass_hz": [
+     0.5,
+     8.0
+    ],
+    "filter_order": 3,
+    "min_peak_distance_s": 0.33,
+    "prominence_scale": 0.2,
+    "ibi_valid_range_s": [
+     0.33,
+     2.0
+    ],
+    "min_beats_for_hr": 10,
+    "min_beat_coverage": 0.5
+   },
+   "hrv": {
+    "enabled": false,
+    "min_beat_coverage": null
+   }
+  },
+  "quality": {
+   "constant_eps": 1e-09,
+   "acc_clip_counts": 127,
+   "eda_min_plausible_us": 0.01,
+   "temp_plausible_range_c": [
+    20.0,
+    45.0
+   ]
+  },
+  "device": "wrist",
+  "labels": {
+   "raw_codes": {
+    "0": "transient_undefined",
+    "1": "baseline",
+    "2": "stress",
+    "3": "amusement",
+    "4": "meditation",
+    "5": "ignore_reading_block",
+    "6": "ignore_reading_block",
+    "7": "ignore_reading_block"
+   },
+   "positive_condition": "protocol_stress",
+   "negative_condition": "baseline",
+   "positive_code": 2,
+   "negative_code": 1,
+   "ineligible_codes": [
+    0,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "preserve_raw_label": true,
+   "trim_relative_to_quest_s_approx": 10.0
+  }
+ },
+ "parameters": {
+  "window": {
+   "length_s": 60.0,
+   "step_s": 60.0,
+   "origin_s": 0.0
+  },
+  "eda": {
+   "tonic_lowpass_hz": 0.05,
+   "filter_order": 2,
+   "scr_min_amplitude_us": 0.01,
+   "scr_min_distance_s": 1.0
+  },
+  "bvp": {
+   "bandpass_hz": [
+    0.5,
+    8.0
+   ],
+   "filter_order": 3,
+   "min_peak_distance_s": 0.33,
+   "prominence_scale": 0.2,
+   "ibi_valid_range_s": [
+    0.33,
+    2.0
+   ],
+   "min_beats_for_hr": 10,
+   "min_beat_coverage": 0.5
+  },
+  "quality": {
+   "constant_eps": 1e-09,
+   "acc_clip_counts": 127,
+   "eda_min_plausible_us": 0.01,
+   "temp_plausible_range_c": [
+    20.0,
+    45.0
+   ]
+  }
+ },
+ "window": {
+  "length_s": 60.0,
+  "step_s": 60.0,
+  "origin": "synchronised pickle t=0",
+  "interval": "half-open [start, end)",
+  "grid_uses_labels": false
+ },
+ "participants": [
+  "S2",
+  "S3",
+  "S4",
+  "S5",
+  "S6",
+  "S7",
+  "S8",
+  "S9",
+  "S10",
+  "S11",
+  "S13",
+  "S14",
+  "S15",
+  "S16",
+  "S17"
+ ],
+ "per_participant": [
+  {
+   "participant_id": "S2",
+   "duration_s": 6079.0,
+   "stream_durations_s": {
+    "ACC": 6079.0,
+    "BVP": 6079.0,
+    "EDA": 6079.0,
+    "TEMP": 6079.0,
+    "label": 6079.0
+   },
+   "n_windows": 101,
+   "omitted_tail_s": 19.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 5.494770120795096,
+   "n_pulse_peaks_recording": 8350,
+   "n_scr_peaks_recording": 704
+  },
+  {
+   "participant_id": "S3",
+   "duration_s": 6493.0,
+   "stream_durations_s": {
+    "ACC": 6493.0,
+    "BVP": 6493.0,
+    "EDA": 6493.0,
+    "TEMP": 6493.0,
+    "label": 6493.0
+   },
+   "n_windows": 108,
+   "omitted_tail_s": 13.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 2.1557323795295575,
+   "n_pulse_peaks_recording": 8219,
+   "n_scr_peaks_recording": 678
+  },
+  {
+   "participant_id": "S4",
+   "duration_s": 6423.0,
+   "stream_durations_s": {
+    "ACC": 6423.0,
+    "BVP": 6423.0,
+    "EDA": 6423.0,
+    "TEMP": 6423.0,
+    "label": 6423.0
+   },
+   "n_windows": 107,
+   "omitted_tail_s": 3.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 8.524749948954268,
+   "n_pulse_peaks_recording": 7632,
+   "n_scr_peaks_recording": 458
+  },
+  {
+   "participant_id": "S5",
+   "duration_s": 6258.0,
+   "stream_durations_s": {
+    "ACC": 6258.0,
+    "BVP": 6258.0,
+    "EDA": 6258.0,
+    "TEMP": 6258.0,
+    "label": 6258.0
+   },
+   "n_windows": 104,
+   "omitted_tail_s": 18.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 7.498744798534332,
+   "n_pulse_peaks_recording": 9064,
+   "n_scr_peaks_recording": 1106
+  },
+  {
+   "participant_id": "S6",
+   "duration_s": 7071.0,
+   "stream_durations_s": {
+    "ACC": 7071.0,
+    "BVP": 7071.0,
+    "EDA": 7071.0,
+    "TEMP": 7071.0,
+    "label": 7071.0
+   },
+   "n_windows": 117,
+   "omitted_tail_s": 51.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 3.834518924014824,
+   "n_pulse_peaks_recording": 9006,
+   "n_scr_peaks_recording": 1604
+  },
+  {
+   "participant_id": "S7",
+   "duration_s": 5238.0,
+   "stream_durations_s": {
+    "ACC": 5238.0,
+    "BVP": 5238.0,
+    "EDA": 5238.0,
+    "TEMP": 5238.0,
+    "label": 5238.0
+   },
+   "n_windows": 87,
+   "omitted_tail_s": 18.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 2.7263529921449727,
+   "n_pulse_peaks_recording": 6885,
+   "n_scr_peaks_recording": 1805
+  },
+  {
+   "participant_id": "S8",
+   "duration_s": 5466.0,
+   "stream_durations_s": {
+    "ACC": 5466.0,
+    "BVP": 5466.0,
+    "EDA": 5466.0,
+    "TEMP": 5466.0,
+    "label": 5466.0
+   },
+   "n_windows": 91,
+   "omitted_tail_s": 6.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 6.786427715336626,
+   "n_pulse_peaks_recording": 7130,
+   "n_scr_peaks_recording": 547
+  },
+  {
+   "participant_id": "S9",
+   "duration_s": 5223.0,
+   "stream_durations_s": {
+    "ACC": 5223.0,
+    "BVP": 5223.0,
+    "EDA": 5223.0,
+    "TEMP": 5223.0,
+    "label": 5223.0
+   },
+   "n_windows": 87,
+   "omitted_tail_s": 3.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 5.205546105732931,
+   "n_pulse_peaks_recording": 7338,
+   "n_scr_peaks_recording": 565
+  },
+  {
+   "participant_id": "S10",
+   "duration_s": 5496.0,
+   "stream_durations_s": {
+    "ACC": 5496.0,
+    "BVP": 5496.0,
+    "EDA": 5496.0,
+    "TEMP": 5496.0,
+    "label": 5496.0
+   },
+   "n_windows": 91,
+   "omitted_tail_s": 36.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 3.484566402046219,
+   "n_pulse_peaks_recording": 8319,
+   "n_scr_peaks_recording": 583
+  },
+  {
+   "participant_id": "S11",
+   "duration_s": 5233.0,
+   "stream_durations_s": {
+    "ACC": 5233.0,
+    "BVP": 5233.0,
+    "EDA": 5233.0,
+    "TEMP": 5233.0,
+    "label": 5233.0
+   },
+   "n_windows": 87,
+   "omitted_tail_s": 13.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 2.856661766612096,
+   "n_pulse_peaks_recording": 7392,
+   "n_scr_peaks_recording": 1192
+  },
+  {
+   "participant_id": "S13",
+   "duration_s": 5537.0,
+   "stream_durations_s": {
+    "ACC": 5537.0,
+    "BVP": 5537.0,
+    "EDA": 5537.0,
+    "TEMP": 5537.0,
+    "label": 5537.0
+   },
+   "n_windows": 92,
+   "omitted_tail_s": 17.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 7.806000581859331,
+   "n_pulse_peaks_recording": 7795,
+   "n_scr_peaks_recording": 2004
+  },
+  {
+   "participant_id": "S14",
+   "duration_s": 5548.0,
+   "stream_durations_s": {
+    "ACC": 5548.0,
+    "BVP": 5548.0,
+    "EDA": 5548.0,
+    "TEMP": 5548.0,
+    "label": 5548.0
+   },
+   "n_windows": 92,
+   "omitted_tail_s": 28.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 4.859003484822292,
+   "n_pulse_peaks_recording": 8011,
+   "n_scr_peaks_recording": 206
+  },
+  {
+   "participant_id": "S15",
+   "duration_s": 5252.0,
+   "stream_durations_s": {
+    "ACC": 5252.0,
+    "BVP": 5252.0,
+    "EDA": 5252.0,
+    "TEMP": 5252.0,
+    "label": 5252.0
+   },
+   "n_windows": 87,
+   "omitted_tail_s": 32.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 3.084257652714726,
+   "n_pulse_peaks_recording": 7375,
+   "n_scr_peaks_recording": 544
+  },
+  {
+   "participant_id": "S16",
+   "duration_s": 5631.0,
+   "stream_durations_s": {
+    "ACC": 5631.0,
+    "BVP": 5631.0,
+    "EDA": 5631.0,
+    "TEMP": 5631.0,
+    "label": 5631.0
+   },
+   "n_windows": 93,
+   "omitted_tail_s": 51.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 2.4483876135411853,
+   "n_pulse_peaks_recording": 8076,
+   "n_scr_peaks_recording": 626
+  },
+  {
+   "participant_id": "S17",
+   "duration_s": 5920.0,
+   "stream_durations_s": {
+    "ACC": 5920.0,
+    "BVP": 5920.0,
+    "EDA": 5920.0,
+    "TEMP": 5920.0,
+    "label": 5920.0
+   },
+   "n_windows": 98,
+   "omitted_tail_s": 40.0,
+   "eda_decomposition_ok": true,
+   "eda_decomposition_error": "",
+   "bvp_pulse_detection_ok": true,
+   "bvp_pulse_detection_error": "",
+   "bvp_prominence_threshold": 3.6840018065316196,
+   "n_pulse_peaks_recording": 8043,
+   "n_scr_peaks_recording": 1028
+  }
+ ],
+ "counts": {
+  "total": {
+   "complete_windows": 1442,
+   "eligible_baseline": 282,
+   "eligible_stress": 152,
+   "homogeneous_other_ineligible": 785,
+   "mixed_boundary": 223,
+   "structural_ok": 1442
+  },
+  "per_participant": {
+   "S2": {
+    "complete_windows": 101,
+    "eligible_baseline": 18,
+    "eligible_stress": 10,
+    "homogeneous_other_ineligible": 59,
+    "mixed_boundary": 14,
+    "structural_ok": 101
+   },
+   "S3": {
+    "complete_windows": 108,
+    "eligible_baseline": 18,
+    "eligible_stress": 10,
+    "homogeneous_other_ineligible": 64,
+    "mixed_boundary": 16,
+    "structural_ok": 108
+   },
+   "S4": {
+    "complete_windows": 107,
+    "eligible_baseline": 19,
+    "eligible_stress": 9,
+    "homogeneous_other_ineligible": 64,
+    "mixed_boundary": 15,
+    "structural_ok": 107
+   },
+   "S5": {
+    "complete_windows": 104,
+    "eligible_baseline": 19,
+    "eligible_stress": 9,
+    "homogeneous_other_ineligible": 60,
+    "mixed_boundary": 16,
+    "structural_ok": 104
+   },
+   "S6": {
+    "complete_windows": 117,
+    "eligible_baseline": 19,
+    "eligible_stress": 10,
+    "homogeneous_other_ineligible": 73,
+    "mixed_boundary": 15,
+    "structural_ok": 117
+   },
+   "S7": {
+    "complete_windows": 87,
+    "eligible_baseline": 19,
+    "eligible_stress": 10,
+    "homogeneous_other_ineligible": 45,
+    "mixed_boundary": 13,
+    "structural_ok": 87
+   },
+   "S8": {
+    "complete_windows": 91,
+    "eligible_baseline": 19,
+    "eligible_stress": 11,
+    "homogeneous_other_ineligible": 46,
+    "mixed_boundary": 15,
+    "structural_ok": 91
+   },
+   "S9": {
+    "complete_windows": 87,
+    "eligible_baseline": 18,
+    "eligible_stress": 9,
+    "homogeneous_other_ineligible": 44,
+    "mixed_boundary": 16,
+    "structural_ok": 87
+   },
+   "S10": {
+    "complete_windows": 91,
+    "eligible_baseline": 19,
+    "eligible_stress": 11,
+    "homogeneous_other_ineligible": 46,
+    "mixed_boundary": 15,
+    "structural_ok": 91
+   },
+   "S11": {
+    "complete_windows": 87,
+    "eligible_baseline": 19,
+    "eligible_stress": 11,
+    "homogeneous_other_ineligible": 43,
+    "mixed_boundary": 14,
+    "structural_ok": 87
+   },
+   "S13": {
+    "complete_windows": 92,
+    "eligible_baseline": 19,
+    "eligible_stress": 10,
+    "homogeneous_other_ineligible": 49,
+    "mixed_boundary": 14,
+    "structural_ok": 92
+   },
+   "S14": {
+    "complete_windows": 92,
+    "eligible_baseline": 19,
+    "eligible_stress": 10,
+    "homogeneous_other_ineligible": 49,
+    "mixed_boundary": 14,
+    "structural_ok": 92
+   },
+   "S15": {
+    "complete_windows": 87,
+    "eligible_baseline": 19,
+    "eligible_stress": 11,
+    "homogeneous_other_ineligible": 43,
+    "mixed_boundary": 14,
+    "structural_ok": 87
+   },
+   "S16": {
+    "complete_windows": 93,
+    "eligible_baseline": 19,
+    "eligible_stress": 10,
+    "homogeneous_other_ineligible": 48,
+    "mixed_boundary": 16,
+    "structural_ok": 93
+   },
+   "S17": {
+    "complete_windows": 98,
+    "eligible_baseline": 19,
+    "eligible_stress": 11,
+    "homogeneous_other_ineligible": 52,
+    "mixed_boundary": 16,
+    "structural_ok": 98
+   }
+  },
+  "homogeneous_other_by_code": {
+   "0": 536,
+   "3": 79,
+   "4": 170
+  }
+ },
+ "versions": {
+  "python": "3.12.13",
+  "numpy": "2.5.3",
+  "scipy": "1.18.1",
+  "pandas": "3.0.5",
+  "pyarrow": "25.0.1"
+ },
+ "stochastic_processing": "none"
+}

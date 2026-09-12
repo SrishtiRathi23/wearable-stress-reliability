@@ -37,13 +37,36 @@ windowing:
   sensitivity_lengths_s: [30, 60, 120]
 
 features:
-  # Feature families are enabled per dataset config depending on signal availability.
-  families: [eda, cardiac, temperature, activity, quality]
-  # HRV/IBI features are computed ONLY when beat coverage in the window passes
-  # a quality threshold. Threshold is TODO (decide after the WESAD audit).
+  # Phase-2 feature families (wrist E4 only, D-021). Parameters below are
+  # PROVISIONAL signal-processing choices, chosen without reference to labels;
+  # they are recorded in data/manifests/wesad_feature_schema.json.
+  families: [activity, eda, cardiac, temperature]
+  acc:
+    counts_per_g: 64            # readme II.2: E4 ACC in 1/64 g
+  eda:
+    tonic_lowpass_hz: 0.05      # provisional: zero-phase Butterworth low-pass -> tonic; phasic = raw - tonic
+    filter_order: 2
+    scr_min_amplitude_us: 0.01  # provisional: SCR-like peak prominence floor on the phasic component
+    scr_min_distance_s: 1.0
+  bvp:
+    bandpass_hz: [0.5, 8.0]     # provisional in-house pulse detector (NOT a validated PPG algorithm)
+    filter_order: 3
+    min_peak_distance_s: 0.33   # ~180 bpm ceiling
+    prominence_scale: 0.2       # provisional: fraction of MAD-based robust amplitude
+    ibi_valid_range_s: [0.33, 2.0]
+    min_beats_for_hr: 10        # provisional
+    min_beat_coverage: 0.5      # provisional
+  # HRV/IBI features remain DISABLED (D-021). Any gating threshold is TODO (T-10).
   hrv:
     enabled: false
-    min_beat_coverage: null   # TODO
+    min_beat_coverage: null   # TODO T-10
+
+quality:
+  # Window-level flags only; nothing is deleted. Thresholds are PROVISIONAL.
+  constant_eps: 1.0e-9
+  acc_clip_counts: 127        # provisional: E4 range is +-2 g = +-128 counts
+  eda_min_plausible_us: 0.01  # provisional
+  temp_plausible_range_c: [20.0, 45.0]   # provisional
 
 evaluation:
   # NON-NEGOTIABLE: participant-level outer holdout.

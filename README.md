@@ -41,7 +41,7 @@ The full protocol, hypotheses, and open decisions are in [`docs/research_protoco
 
 ## Current status
 
-**Phase 1 complete (WESAD acquisition + structural audit).** The official WESAD release is downloaded, checksum-baselined and structurally audited (`src/wsr/data/audit_wesad.py` -> `data/manifests/wesad_audit.json`; narrative in `docs/dataset_notes.md`). No preprocessing, features, models or results yet. Next step (pending approval): design decisions T-01/T-05 and the binary label mapping, then windowing.
+**Phase 2 complete (verified loading, time-only windowing, quality flags, feature table).** `python -m wsr.features.build_features` regenerates `data/processed/wesad_windows_60s.parquet` (1442 windows x 117 columns, 59 model features; schema and processing manifest under `data/manifests/`). No model has been trained and no predictive number exists. Next step (pending approval): Phase 3 participant-independent baseline pipelines, after T-04 (split) is decided.
 
 ## Setup
 
@@ -64,6 +64,8 @@ Datasets are downloaded manually into `data/raw/<dataset>/` (see `data/raw/READM
 ```bash
 .venv/Scripts/python -m wsr.utils.integrity snapshot data/raw/wesad   # once, after download; commit the manifest
 .venv/Scripts/python -m wsr.utils.integrity verify   data/raw/wesad   # any time; also run by the test suite
+.venv/Scripts/python -m wsr.data.audit_wesad                         # Phase 1 structural audit
+.venv/Scripts/python -m wsr.features.build_features                  # Phase 2 canonical window-feature table
 ```
 
 `snapshot` refuses to overwrite an existing baseline. Replacing one (`--replace-baseline`) is a deliberate dataset-version change that must be reviewed and logged in `docs/decisions.md`.
