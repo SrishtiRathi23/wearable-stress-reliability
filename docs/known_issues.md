@@ -36,10 +36,10 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 - **Plan:** decide episode definition (T-05) after the audit reports block durations; options listed in `research_protocol.md` Section 5.
 - **Status:** open
 
-### KI-06 Duration-preferred policy could use test labels by accident
+### KI-06 Candidate generation and masks could use test labels by accident
 - **Severity:** HIGH (invariant #5)
-- **Issue:** "Prefer longer events" is only valid if event boundaries come from a detector or time structure. If boundaries come from the protocol labels, the mask depends on test labels.
-- **Plan:** mask builders receive only signals/detector outputs/time indices; the permutation test in `tests/test_label_masks.py` will catch violations.
+- **Issue:** "Prefer longer events" is only valid if event boundaries come from a detector or time structure. If boundaries come from the protocol labels, the mask depends on test labels. Independent review (2026-09-12) sharpened this: **candidate generation itself must be label-independent**. Keeping `y_test` out of the final mask function is insufficient if the candidate episodes, their boundaries, durations, or detector scores were computed upstream with any access to held-out labels.
+- **Plan:** the whole candidate-construction pipeline (episode boundaries, detector scores, durations, ranking) receives only signals/features/time indices from the held-out participant and models trained without that participant. The future leakage test in `tests/test_label_masks.py` must **rebuild candidate construction from the beginning** under permuted held-out labels and assert identical candidates and masks; permuting labels only after candidate metadata exists would not detect upstream leakage.
 - **Status:** open until implemented
 
 ## Modelling
@@ -82,10 +82,22 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 - **Plan:** literature search before the protocol is frozen; record findings in `dataset_notes.md` or a `literature.md`.
 - **Status:** open
 
-### KI-13 Study C could produce a trivial result
+### KI-13 Study C is under-specified and could produce a trivial result
 - **Severity:** MEDIUM
-- **Issue:** If visible labels are naively pooled, adding random labels reduces bias approximately in proportion to the random fraction - an arithmetic consequence, not a finding. The interesting question is whether an estimator that uses the random component (audit-only or IPW) recovers full-reference metrics better than pooling.
-- **Plan:** pre-declare estimators (T-09).
+- **Issue:** If visible labels are naively pooled, adding random labels reduces bias approximately in proportion to the random fraction - an arithmetic consequence, not a finding. The interesting question is whether an estimator that uses the random component (audit-only or IPW) recovers full-reference metrics better than pooling. Independent review (2026-09-12) added that before implementation Study C must define: (a) the **random sampling frame** (random over what population: all episodes, all windows, all time, per participant or pooled?); (b) **overlap/budget accounting** when a randomly drawn unit is also targeted (does it consume one budget unit or two, and which estimator sees it?); (c) a **100 %-random same-budget comparator**, without which "mixing helps" cannot be distinguished from "random alone is enough".
+- **Plan:** pre-declare sampling frame, overlap accounting, comparator and estimators (T-09) before any Study C code.
+- **Status:** open
+
+### KI-17 Brier-score change alone is not proof of calibration distortion
+- **Severity:** MEDIUM (interpretation risk)
+- **Issue:** The Brier score decomposes into calibration (reliability), refinement/resolution and uncertainty terms. Selecting a label subset changes the base rate and the discrimination component, so the Brier score can move even when the reliability curve is unchanged. A later report must not describe "Brier changed under policy X" as "calibration was distorted".
+- **Plan:** report calibration evidence separately from overall Brier (reliability curve distance, slope/intercept, and/or the calibration component of a Brier decomposition), and state which term moved. Exact metric set is part of the protocol freeze.
+- **Status:** open (recorded from independent review, 2026-09-12)
+
+### KI-18 Study B is under-specified
+- **Severity:** HIGH for Study B
+- **Issue:** Independent review (2026-09-12) listed items that must be defined before implementation: (a) **development roles** - which training participants serve model fitting vs calibration vs threshold/policy selection, and whether roles rotate; (b) **detector access** in development - whether the detector used to mask development labels may see development labels, and how it is trained relative to the roles above; (c) the **coverage constraint or loss** under which policies are compared (e.g. accepted error at fixed coverage vs a coverage-penalised risk); (d) **tie handling** when several policies are equally good on visible labels; (e) the **comparator** for regret (policy chosen on full development labels vs test-oracle policy, the latter diagnostic only).
+- **Plan:** resolve as T-08 before any Study B code; record in `research_protocol.md` Section 6 as an amendment.
 - **Status:** open
 
 ### KI-14 Timeline

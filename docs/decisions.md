@@ -98,10 +98,11 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 - **Rationale:** Avoid inventing schemas for uninspected data; avoid tests that always pass.
 - **Status:** agreed
 
-### D-015 - Raw data immutability is enforced by checksum manifests
-- **Date:** 2026-09-12
+### D-015 - Raw data immutability is enforced by a committed checksum baseline
+- **Date:** 2026-09-12 (amended 2026-09-12 after independent review)
 - **Category:** ENGINEERING
-- **Decision:** After each dataset download, `python -m wsr.utils.integrity snapshot data/raw/<dataset>` writes a committed SHA-256 manifest; `tests/test_raw_immutable.py` verifies it.
+- **Decision:** After each dataset download, `python -m wsr.utils.integrity snapshot data/raw/<dataset>` writes a committed SHA-256 baseline covering every file in the dataset tree, including dataset-shipped documentation; the only exclusion is a repository-owned `.gitkeep` at the dataset root. `tests/test_raw_immutable.py` verifies added/removed/modified files against it.
+- **Amendment (review finding):** ordinary `snapshot` refuses to overwrite an existing baseline, so a modified raw tree cannot be silently re-blessed. Replacing a baseline requires the explicit `--replace-baseline` flag (API: `replace=True`), is never called automatically, and represents a deliberate dataset-version change that must be reviewed and recorded here as a new decision entry (dataset, release/version, reason, date).
 - **Status:** agreed
 
 ### D-016 - Seeding convention: one global seed, named child streams
@@ -109,6 +110,13 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 - **Category:** ENGINEERING
 - **Decision:** `seed` in config; every stochastic component uses `wsr.utils.seeds.rng(seed, "<stream name>")` or `child_seed(seed, "<stream>")` for library `random_state` arguments.
 - **Rationale:** Adding a new random consumer must not shift the random state of existing ones.
+- **Status:** agreed
+
+### D-017 - Dependency lock file excludes the local editable package
+- **Date:** 2026-09-12
+- **Category:** ENGINEERING
+- **Decision:** `requirements-lock.txt` is generated with `uv pip freeze --exclude-editable` and lists third-party pins only; the local package is installed separately with `-e .`.
+- **Rationale:** Independent review found an absolute `-e file:///E:/...` entry that made the lock file machine-specific.
 - **Status:** agreed
 
 ---
@@ -121,11 +129,11 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 | T-02 | WESAD raw label codes and excluded conditions (verify against readme) | labels | `configs/wesad.yaml: labels` |
 | T-03 | Usable WESAD participants and any exclusions with reasons | splits | audit -> `data/manifests/` |
 | T-04 | LOPO vs grouped k-fold outer split; inner fold count | baseline | `configs/base.yaml: evaluation` |
-| T-05 | Episode / selection-unit definition on WESAD | Study A | `research_protocol.md` S5 |
+| T-05 | Episode / selection-unit definition on WESAD; candidate generation must itself be label-independent, not just the final mask function | Study A | `research_protocol.md` S5; KI-06 |
 | T-06 | Budget unit and budget grid | Study A/B/C | `configs/base.yaml: observation_policies` |
 | T-07 | Detector definition for `detector_triggered` | Study A | `research_protocol.md` S5 |
-| T-08 | Policy-selection regret formula and development selection criterion | Study B | `research_protocol.md` S6 |
-| T-09 | Study C estimator (naive pooled / audit-only / IPW) | Study C | `research_protocol.md` S7 |
+| T-08 | Study B specification: development roles (which participants play calibration/threshold/selection roles), detector access in development, coverage constraint or loss, tie handling, comparator; then the regret formula | Study B | `research_protocol.md` S6; KI-18 |
+| T-09 | Study C specification: random sampling frame, overlap/budget accounting between targeted and random draws, 100 %-random same-budget comparator; then the estimator (naive pooled / audit-only / IPW) | Study C | `research_protocol.md` S7; KI-13 |
 | T-10 | HRV feature gating threshold (beat coverage) | features | `configs/base.yaml: features.hrv` |
 | T-11 | Nurse timestamp units / timezone / alignment (Gate 1) | Study D | `configs/nurse.yaml: timestamps` |
 | T-12 | Nurse raw label values and binary mapping | Study D | `configs/nurse.yaml: labels` |

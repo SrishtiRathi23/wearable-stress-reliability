@@ -12,7 +12,14 @@ Rules (research invariant #8 in `docs/PROJECT_CONTEXT.md`):
 
 - Files in this directory are never edited, renamed, re-encoded, or partially deleted by code.
 - All processing writes to `data/interim/` or `data/processed/`.
-- After downloading, record SHA-256 checksums with `python -m wsr.utils.integrity snapshot data/raw/<dataset>`;
-  the manifest goes to `data/manifests/raw_checksums_<dataset>.json` and is committed.
-  `tests/test_raw_immutable.py` verifies the raw tree still matches the manifest.
+- Immutability is protected by a committed checksum baseline. After downloading, run once:
+  `python -m wsr.utils.integrity snapshot data/raw/<dataset>`; the baseline goes to
+  `data/manifests/raw_checksums_<dataset>.json` and is committed. It hashes every file in the
+  dataset tree, including documentation shipped with the dataset (the only exclusion is a
+  repository-owned `.gitkeep` at the dataset root).
+- `python -m wsr.utils.integrity verify data/raw/<dataset>` (and `tests/test_raw_immutable.py`)
+  reports added, removed and modified files against the baseline.
+- `snapshot` refuses to overwrite an existing baseline, so a modified tree cannot be silently
+  re-blessed. Replacing a baseline (`--replace-baseline`) is only for a deliberate new dataset
+  release; it is a dataset-version change that must be reviewed and logged in `docs/decisions.md`.
 - Nothing in this directory is committed to Git (see `.gitignore`).

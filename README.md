@@ -53,13 +53,20 @@ uv pip install --python .venv -r requirements.txt -e .
 .venv/Scripts/python -m pytest        # Windows; use .venv/bin/python on Linux/macOS
 ```
 
-Exact package versions used for reported results are in `requirements-lock.txt`.
-
-Datasets are downloaded manually into `data/raw/<dataset>/` (see `data/raw/README.md`), then snapshotted:
+To reproduce the exact third-party versions used for reported results (the local package is installed separately):
 
 ```bash
-.venv/Scripts/python -m wsr.utils.integrity snapshot data/raw/wesad
+uv pip install --python .venv -r requirements-lock.txt -e .
 ```
+
+Datasets are downloaded manually into `data/raw/<dataset>/` (see `data/raw/README.md`). Raw-data immutability is protected by a **committed checksum baseline** per dataset:
+
+```bash
+.venv/Scripts/python -m wsr.utils.integrity snapshot data/raw/wesad   # once, after download; commit the manifest
+.venv/Scripts/python -m wsr.utils.integrity verify   data/raw/wesad   # any time; also run by the test suite
+```
+
+`snapshot` refuses to overwrite an existing baseline. Replacing one (`--replace-baseline`) is a deliberate dataset-version change that must be reviewed and logged in `docs/decisions.md`.
 
 ## Repository layout
 

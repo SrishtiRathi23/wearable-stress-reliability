@@ -1,3 +1,7 @@
+# Exact third-party versions resolved on 2026-09-12 (CPython 3.12.13, Windows).
+# Regenerate with: uv pip freeze --python .venv --exclude-editable
+# Reconstruct with:  uv pip install --python .venv -r requirements-lock.txt -e .
+# The local package (wsr) is deliberately NOT listed here; install it with -e .
 cloudpickle==3.1.2
 colorama==0.4.6
 contourpy==1.4.0
@@ -23,4 +27,3 @@ scipy==1.18.1
 six==1.17.0
 threadpoolctl==3.6.0
 tzdata==2026.3
--e file:///E:/Tinaas%20Minor%20Project
