@@ -1,0 +1,66 @@
+{
+  "dataset": "WESAD (Wearable Stress and Affect Detection)",
+  "access_date": "2026-09-12",
+  "provenance_chain": [
+    {
+      "role": "catalogue / DOI",
+      "url": "https://archive.ics.uci.edu/dataset/465/wesad+wearable+stress+and+affect+detection",
+      "page_title": "UCI Machine Learning Repository - WESAD (Wearable Stress and Affect Detection)",
+      "doi": "10.24432/C57K5T",
+      "linked_on": "2018-09-13",
+      "license_statement": "See linked dataset for licensing information",
+      "notes": "UCI page links to the University of Siegen dataset home page; no file hosted at UCI."
+    },
+    {
+      "role": "official dataset home page (legacy, redirect stub)",
+      "url": "https://www.eti.uni-siegen.de/ubicomp/home/datasets/icmi18/index.html.en?lang=en",
+      "page_title": "WESAD: Multimodal Dataset for Wearable Stress and Affect Detection",
+      "notes": "Page states it is no longer updated and points to https://ubi29.informatik.uni-siegen.de/usi/data_wesad.html"
+    },
+    {
+      "role": "official dataset page (current)",
+      "url": "https://ubi29.informatik.uni-siegen.de/usi/data_wesad.html",
+      "page_title": "WESAD",
+      "stated_size": "2.5 GB (zipped)",
+      "terms_of_use": "You may use this data for scientific, non-commercial purposes, provided that you give credit to the owners when publishing any work based on this data.",
+      "citation_request": "Philip Schmidt, Attila Reiss, Robert Duerichen, Claus Marberger, Kristof Van Laerhoven. Introducing WESAD, a multimodal dataset for Wearable Stress and Affect Detection. ICMI 2018, Boulder, USA.",
+      "stated_version": null,
+      "published_checksum": null
+    },
+    {
+      "role": "download host (public share, no authentication)",
+      "url": "https://uni-siegen.sciebo.de/s/HGdUkoNlW1Ub0Gx",
+      "direct_download_url": "https://uni-siegen.sciebo.de/s/HGdUkoNlW1Ub0Gx/download",
+      "resolved_to": "https://uni-siegen.sciebo.de/public.php/dav/files/HGdUkoNlW1Ub0Gx",
+      "content_disposition_filename": "WESAD.zip",
+      "content_length_bytes": 2249444501,
+      "content_type": "application/zip"
+    }
+  ],
+  "published_archive_checksum": "none published by the dataset owners (checked UCI page and Siegen page on access date); our own SHA-256 of the archive is recorded in raw_checksums_wesad.json",
+  "local_layout": "data/raw/wesad/WESAD.zip (archive kept) + data/raw/wesad/WESAD/ (extracted, unmodified)",
+  "downloaded_archive": {
+    "filename": "WESAD.zip",
+    "local_path": "data/raw/wesad/WESAD.zip",
+    "byte_size": 2249444501,
+    "sha256_locally_computed": "5e15d2606adf16d819ba535c1786d92e94bae5ff5392f7ae01fb63f9938fd71c",
+    "hash_note": "Computed locally on 2026-09-12 with hashlib.sha256 over the unmodified downloaded file. This is NOT a publisher-provided checksum; the dataset owners publish none (UCI and Siegen pages checked on the access date). It serves only to identify the exact bytes this project used.",
+    "download_source": "https://uni-siegen.sciebo.de/s/HGdUkoNlW1Ub0Gx/download (share id HGdUkoNlW1Ub0Gx)",
+    "access_date": "2026-09-12",
+    "download_duration_s": 797,
+    "zip_testzip_result": "no corrupt members",
+    "zip_entry_count": 92,
+    "top_level_members": [
+      "WESAD/S<id>/ for S2-S11, S13-S17 (15 subjects; S1 and S12 absent from release)",
+      "WESAD/wesad_readme.pdf"
+    ],
+    "per_subject_members": [
+      "S<id>.pkl",
+      "S<id>_E4_Data.zip",
+      "S<id>_quest.csv",
+      "S<id>_readme.txt",
+      "S<id>_respiban.txt"
+    ],
+    "extraction": "Python zipfile.extractall into data/raw/wesad/ (creates data/raw/wesad/WESAD/); no renaming, no re-encoding; inner S<id>_E4_Data.zip left as shipped (not extracted). Original WESAD.zip retained alongside, git-ignored."
+  }
+}

@@ -76,3 +76,15 @@ desktop.ini
 
 # Claude Code local settings (keep shared settings if any are added later)
 .claude/settings.local.json
+
+# AI-assistant / agent working files are never part of the research record.
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+AGENTS.md
+GEMINI.md
+.codex/
+.cursor/
+.cursorrules
+.windsurfrules
+.aider*
