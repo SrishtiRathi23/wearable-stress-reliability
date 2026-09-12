@@ -11,8 +11,17 @@ import numpy as np
 
 from wsr.features.schema import ColumnDef, feature
 
+#: readme II.2: E4 ACC is shipped in 1/64 g. The config value must equal this;
+#: any other value is rejected (the release cannot have a different scale).
 COUNTS_PER_G = 64.0
 _AXES = ("x", "y", "z")
+
+
+def counts_per_g_from_config(acc_cfg: dict) -> float:
+    v = float(acc_cfg.get("counts_per_g", COUNTS_PER_G))
+    if v != COUNTS_PER_G:
+        raise ValueError(f"features.acc.counts_per_g = {v} contradicts the WESAD release scale of {COUNTS_PER_G:g} counts/g (readme II.2)")
+    return v
 
 
 def _iqr(v: np.ndarray) -> float:
@@ -30,8 +39,8 @@ FEATURES: list[ColumnDef] = (
 )
 
 
-def compute_acc_features(acc_counts: np.ndarray) -> dict[str, float]:
-    a = np.asarray(acc_counts, dtype=np.float64) / COUNTS_PER_G
+def compute_acc_features(acc_counts: np.ndarray, counts_per_g: float = COUNTS_PER_G) -> dict[str, float]:
+    a = np.asarray(acc_counts, dtype=np.float64) / counts_per_g
     if a.ndim != 2 or a.shape[1] != 3 or a.shape[0] < 2:
         raise ValueError(f"ACC window must be (n>=2, 3); got {a.shape}")
     out: dict[str, float] = {}

@@ -160,7 +160,7 @@ def test_write_outputs_roundtrip_and_manifest(release, cfg, tmp_path: Path):
     pd.testing.assert_frame_equal(back, table)
     assert back.analysis_label.dtype.name == "Int8" and back.homogeneous_raw_label.dtype.name == "Int16"
     assert m["table_sha256"] == integrity.sha256_file(out) and m["n_rows"] == len(table) and m["window"]["grid_uses_labels"] is False
-    assert m["raw_checksum_manifest"]["n_files"] == len(release.expected_hashes)
+    assert m["raw_checksum_manifest"]["n_files"] == release.n_files
     schema = json.loads((tmp_path / "schema.json").read_text())
     assert schema["n_model_features"] == m["n_model_features"] == len([c for c in FEATURE_DEFS if c.role == "feature"])
 

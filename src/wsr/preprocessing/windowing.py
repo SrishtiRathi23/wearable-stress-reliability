@@ -25,8 +25,36 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-#: Primary binary reference (D-021): raw code -> analysis label.
-BINARY_REFERENCE: dict[int, int] = {1: 0, 2: 1}  # 1 = baseline reference -> 0 ; 2 = protocol-stress reference -> 1
+#: Primary binary reference (D-021, frozen): raw code -> analysis label.
+#: 1 = baseline reference -> 0 ; 2 = protocol-stress reference -> 1.
+#: The config must agree with this (see `binary_reference_from_config`); a
+#: contradictory config is rejected rather than silently overridden.
+FROZEN_POSITIVE_CODE = 2
+FROZEN_NEGATIVE_CODE = 1
+BINARY_REFERENCE: dict[int, int] = {FROZEN_NEGATIVE_CODE: 0, FROZEN_POSITIVE_CODE: 1}
+DOCUMENTED_CODES = frozenset(range(8))
+
+
+class ConfigContractError(ValueError):
+    """A config value contradicts what this code actually implements (D-021/D-023)."""
+
+
+def binary_reference_from_config(labels_cfg: dict) -> dict[int, int]:
+    """Build the raw-code -> analysis-label map from config and validate it against the frozen contract."""
+    try:
+        pos, neg = int(labels_cfg["positive_code"]), int(labels_cfg["negative_code"])
+        inel = [int(c) for c in labels_cfg["ineligible_codes"]]
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ConfigContractError(f"labels config incomplete/invalid: {exc}") from exc
+    if (pos, neg) != (FROZEN_POSITIVE_CODE, FROZEN_NEGATIVE_CODE):
+        raise ConfigContractError(f"labels.positive_code/negative_code = ({pos}, {neg}) but Phase 2 implements the frozen mapping ({FROZEN_POSITIVE_CODE}, {FROZEN_NEGATIVE_CODE}) (D-021)")
+    if set(inel) != DOCUMENTED_CODES - {pos, neg}:
+        raise ConfigContractError(f"labels.ineligible_codes must be exactly the documented codes other than {pos},{neg}; got {sorted(inel)}")
+    if labels_cfg.get("preserve_raw_label") is not True:
+        raise ConfigContractError("labels.preserve_raw_label must be true")
+    return {neg: 0, pos: 1}
+
+
 CONDITION_NAMES: dict[int, str] = {0: "transient", 1: "baseline", 2: "stress", 3: "amusement", 4: "meditation", 5: "reading", 6: "reading", 7: "reading"}
 
 

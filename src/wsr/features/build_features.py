@@ -36,7 +36,7 @@ from wsr.data.load_wesad import VerifiedRelease, WesadParticipant, load_particip
 from wsr.features import activity, cardiac, eda as eda_mod, temperature
 from wsr.features.schema import SCHEMA_VERSION, all_column_defs, schema_document
 from wsr.preprocessing import quality as q
-from wsr.preprocessing.windowing import WindowSpec, annotate_reference_labels, build_window_frame, omitted_tail_s
+from wsr.preprocessing.windowing import ConfigContractError, WindowSpec, annotate_reference_labels, binary_reference_from_config, build_window_frame, omitted_tail_s
 from wsr.utils import integrity
 from wsr.utils.config import load_config
 from wsr.utils.paths import DATA_PROCESSED, MANIFESTS, RESULTS_TABLES, ROOT
@@ -45,12 +45,50 @@ FEATURE_DEFS = activity.FEATURES + eda_mod.FEATURES + cardiac.FEATURES + tempera
 FEATURE_NAMES = [f.name for f in FEATURE_DEFS]
 
 
+#: What this Phase-2 implementation actually supports (D-021/D-023). Any config
+#: that says otherwise is rejected so the manifest can never claim a setting the
+#: program did not apply.
+PHASE2_SUPPORTED = {
+    "device": "wrist",
+    "windowing.length_s": 60,
+    "windowing.step_s": 60,
+    "windowing.anchor": "pickle_t0",
+    "windowing.grid_uses_labels": False,
+    "windowing.eligibility_rule": "homogeneous_full_window",
+    "windowing.mixed_window_policy": "keep_in_provenance_mark_ineligible",
+    "features.families": ["activity", "eda", "cardiac", "temperature"],
+    "features.hrv.enabled": False,
+}
+
+
+def _get(cfg: dict[str, Any], dotted: str) -> Any:
+    cur: Any = cfg
+    for k in dotted.split("."):
+        if not isinstance(cur, dict) or k not in cur:
+            raise ConfigContractError(f"config key {dotted!r} missing")
+        cur = cur[k]
+    return cur
+
+
+def validate_config_contract(cfg: dict[str, Any]) -> None:
+    """Fail loudly if the config contradicts what this code implements."""
+    for key, expected in PHASE2_SUPPORTED.items():
+        got = _get(cfg, key)
+        if got != expected:
+            raise ConfigContractError(f"config {key} = {got!r} but Phase 2 implements only {expected!r}")
+    binary_reference_from_config(_get(cfg, "labels"))
+    activity.counts_per_g_from_config(_get(cfg, "features.acc"))
+
+
 def params_from_config(cfg: dict[str, Any]) -> dict[str, Any]:
+    validate_config_contract(cfg)
     w = cfg["windowing"]
     f = cfg.get("features", {})
     qc = cfg.get("quality", {})
     return {
         "window": WindowSpec(length_s=float(w["length_s"]), step_s=float(w["step_s"]), origin_s=0.0),
+        "binary_reference": binary_reference_from_config(cfg["labels"]),
+        "counts_per_g": activity.counts_per_g_from_config(f["acc"]),
         "eda": eda_mod.EdaParams(**f.get("eda", {})),
         "bvp": cardiac.BvpParams(**{k: (tuple(v) if isinstance(v, list) else v) for k, v in f.get("bvp", {}).items()}),
         "quality": q.QualityParams(**{k: (tuple(v) if isinstance(v, list) else v) for k, v in qc.items()}),
@@ -64,7 +102,7 @@ def process_participant(part: WesadParticipant, params: dict[str, Any]) -> tuple
     frame = build_window_frame(part.participant_id, part.duration_s, rates, part.label_rate_hz, spec)
     tail = omitted_tail_s(part.duration_s, spec)
     # 3. reference annotation AFTER the grid exists
-    frame = annotate_reference_labels(frame, part.label)
+    frame = annotate_reference_labels(frame, part.label, params["binary_reference"])
     frame["source_file"] = part.source_file
     frame["source_sha256"] = part.source_sha256
     # 4. recording-level, label-free processing
@@ -92,7 +130,7 @@ def process_participant(part: WesadParticipant, params: dict[str, Any]) -> tuple
         row["q_feature_error"] = ""
         feats: dict[str, float] = {name: np.nan for name in FEATURE_NAMES}
         try:
-            feats.update(activity.compute_acc_features(acc))
+            feats.update(activity.compute_acc_features(acc, params["counts_per_g"]))
             feats.update(eda_mod.compute_eda_features(eda, rates["EDA"], decomp, r.eda_start_sample, r.eda_end_sample))
             bvp_feats, hr_ok = cardiac.compute_bvp_features(bvp, rates["BVP"], peaks, r.bvp_start_sample, r.bvp_end_sample, params["bvp"])
             feats.update(bvp_feats)
@@ -172,7 +210,8 @@ def write_outputs(table: pd.DataFrame, infos: list[dict[str, Any]], params: dict
     git_state = _git_commit()  # captured BEFORE any output is written, so the dirty flag reflects the code, not these outputs
     out_parquet.parent.mkdir(parents=True, exist_ok=True)
     table.to_parquet(out_parquet, engine="pyarrow", index=False)
-    param_doc = {k: asdict(v) for k, v in params.items()}
+    param_doc = {k: (asdict(v) if hasattr(v, "__dataclass_fields__") else v) for k, v in params.items()}
+    param_doc["binary_reference"] = {str(k): v for k, v in params["binary_reference"].items()}
     schema = schema_document(FEATURE_DEFS, param_doc)
     schema_path.parent.mkdir(parents=True, exist_ok=True)
     schema_path.write_text(json.dumps(schema, indent=1) + "\n", encoding="utf-8")
@@ -194,7 +233,7 @@ def write_outputs(table: pd.DataFrame, infos: list[dict[str, Any]], params: dict
         "raw_checksum_manifest": {
             "path": str(integrity.manifest_path(release.raw_root, release.manifests_dir)),
             "sha256": integrity.sha256_file(integrity.manifest_path(release.raw_root, release.manifests_dir)),
-            "n_files": len(release.expected_hashes),
+            "n_files": release.n_files,
         },
         "config_snapshot": {"windowing": cfg["windowing"], "features": cfg.get("features"), "quality": cfg.get("quality"), "device": cfg.get("device"), "labels": cfg.get("labels")},
         "parameters": param_doc,
@@ -221,10 +260,11 @@ def _main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     cfg = load_config("wesad")
-    if cfg.get("device") != "wrist":
-        print("configs/wesad.yaml device must be 'wrist' (D-021)", file=sys.stderr)
+    try:
+        params = params_from_config(cfg)
+    except (ConfigContractError, ValueError) as exc:
+        print(f"CONFIG CONTRACT VIOLATION: {exc}", file=sys.stderr)
         return 2
-    params = params_from_config(cfg)
     release = VerifiedRelease.open()  # verifies the whole raw tree; fails closed
     participants = args.participants or cfg["participants"]["all"]
     table, infos = build(release, participants, params)

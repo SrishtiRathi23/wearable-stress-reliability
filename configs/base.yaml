@@ -64,18 +64,40 @@ features:
 quality:
   # Window-level flags only; nothing is deleted. Thresholds are PROVISIONAL.
   constant_eps: 1.0e-9
-  acc_clip_counts: 127        # provisional: E4 range is +-2 g = +-128 counts
+  acc_rail_counts: 127        # provisional: |count| >= 127 = near the +-2 g rail (q_acc_near_rail); informational only
   eda_min_plausible_us: 0.01  # provisional
   temp_plausible_range_c: [20.0, 45.0]   # provisional
 
 evaluation:
-  # NON-NEGOTIABLE: participant-level outer holdout.
-  # T-04 is NOT decided. Deliberately null: no executable default may masquerade as an agreed choice.
-  outer_split: null                        # TODO T-04: leave-one-participant-out | grouped-k-fold (15 participants)
-  inner_split: grouped-k-fold              # grouped by participant, within training participants only
-  inner_folds: null                        # TODO
+  # FROZEN (D-028, resolves T-04). Participant-level outer holdout is NON-NEGOTIABLE.
+  outer_split: leave-one-participant-out   # 15 outer folds; the outer participant is untouched test data
+  inner_split: stratified-group-kfold      # sklearn StratifiedGroupKFold, group = participant_id, on the 14 outer-training participants only
+  inner_folds: 4
+  inner_seed_stream: inner_split           # wsr.utils.seeds.child_seed(seed, "inner_split"); memberships saved to data/manifests/splits_wesad_*.json
+  inner_folds_shared_across_candidates: true
+  # Inner model-selection score: balanced accuracy computed per validation participant, then the
+  # equal-weight mean over all 14 inner-validation participant appearances. Never window-pooled,
+  # never a mean of fold means.
+  inner_score: participant_level_balanced_accuracy_equal_weight
   # Random-row splits may be run ONLY as a clearly-labelled diagnostic, never as a primary result.
   allow_random_row_split_diagnostic: true
+
+phase3:
+  # FROZEN modelling contract (D-029). Not implemented yet.
+  purpose: comparative_baselines_retained_for_study_a   # no candidate is discarded for scoring lower
+  candidates: [majority, logistic, random_forest, xgboost]
+  model_inputs: schema_model_feature_columns            # exact ordered role == "feature" list from wesad_feature_schema.json (59)
+  supervised_rows: binary_eligible_only                 # training/scoring rows; predictions are still produced for the complete frame
+  classification_threshold: 0.5                         # fixed; not tuned in Phase 3
+  save_positive_class_probability: true
+  majority_baseline: constant_training_majority_label_with_training_prevalence_probability
+  imputation: median_from_training_partition            # fitted inside every training partition (inner and outer)
+  all_missing_feature_rule: impute_constant_zero_and_log # predeclared; feature is then constant in that partition
+  scaling: standard_from_training_partition_for_logistic_only
+  class_weight: predeclared_in_small_grid_from_training_data_only   # never from outer-test prevalence
+  prediction_output: all_complete_windows_of_held_out_participant   # not only the 434 eligible windows
+  hyperparameter_search: small_predeclared_grid_only   # no Optuna / Bayesian / large random search / neural nets / feature selection
+
 
 models:
   candidates: [majority, logistic, random_forest, xgboost]

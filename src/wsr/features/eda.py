@@ -6,12 +6,18 @@ Two stages, both deterministic and label-free:
    recording: tonic = zero-phase Butterworth low-pass (default 0.05 Hz,
    order 2, scipy.signal.sosfiltfilt); phasic = raw - tonic; SCR-like peaks
    on the phasic component with scipy.signal.find_peaks (prominence >=
-   scr_min_amplitude_us, distance >= scr_min_distance_s). Recording-level
-   filtering avoids 60-s edge artefacts; consequently a window's tonic/
-   phasic/SCR values depend on a few seconds of neighbouring signal (a
-   filter effect, not a label effect). This is a simple, transparent
-   decomposition - NOT a validated cvxEDA/Ledalab implementation. All
-   parameters are provisional and recorded in the schema.
+   scr_min_amplitude_us, distance >= scr_min_distance_s). Because the tonic
+   estimate is a zero-phase (forward-backward) low-pass over the WHOLE
+   recording, the derived EDA features have RECORDING-CONTEXT DEPENDENCE:
+   a window's tonic/phasic/SCR values are influenced by signal before and
+   after the window (a 0.05-Hz filter has a long impulse response). They are
+   deterministic and label-independent (not reference-label leakage) and are
+   accepted for the primary OFFLINE participant-held-out analysis (D-025),
+   but they are NOT strictly window-local, NOT causal, and NOT deployable as
+   real-time features without a separate causal/online implementation.
+   This is a simple, transparent decomposition - NOT a validated
+   cvxEDA/Ledalab implementation. All parameters are provisional and
+   recorded in the schema.
 
 2. `compute_eda_features` summarises one window from the raw slice and the
    corresponding slices of the decomposition.

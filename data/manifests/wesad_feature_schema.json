@@ -1,5 +1,5 @@
 {
- "schema_version": "1.0.0",
+ "schema_version": "1.1.0",
  "n_columns": 117,
  "n_model_features": 59,
  "model_feature_columns": [
@@ -79,6 +79,11 @@
    "step_s": 60.0,
    "origin_s": 0.0
   },
+  "binary_reference": {
+   "1": 0,
+   "2": 1
+  },
+  "counts_per_g": 64.0,
   "eda": {
    "tonic_lowpass_hz": 0.05,
    "filter_order": 2,
@@ -102,7 +107,7 @@
   },
   "quality": {
    "constant_eps": 1e-09,
-   "acc_clip_counts": 127,
+   "acc_rail_counts": 127,
    "eda_min_plausible_us": 0.01,
    "temp_plausible_range_c": [
     20.0,
@@ -574,10 +579,10 @@
    "model_feature": false
   },
   {
-   "name": "q_acc_clipped",
+   "name": "q_acc_near_rail",
    "role": "quality",
    "modality": "acc",
-   "definition": "Any |raw count| >= clip threshold (provisional; E4 range is +-2 g = +-128 counts)",
+   "definition": "At least one sample with |raw count| >= acc_rail_counts (provisional 127; E4 range +-2 g = +-128 counts). Near-rail, not proven clipping; informational, never an exclusion criterion. Was q_acc_clipped in schema 1.0.0.",
    "unit": "",
    "nullable": false,
    "missing_reason": "",
@@ -632,7 +637,7 @@
    "name": "q_bvp_hr_available",
    "role": "quality",
    "modality": "bvp",
-   "definition": "Enough plausible beats in the window for HR summaries (>= min_beats_for_hr and coverage >= min_beat_coverage)",
+   "definition": "The in-house detector met MECHANICAL count/coverage criteria (>= min_beats_for_hr valid IBIs and coverage >= min_beat_coverage). Says nothing about physiological validity of the beats (KI-21).",
    "unit": "",
    "nullable": false,
    "missing_reason": "",

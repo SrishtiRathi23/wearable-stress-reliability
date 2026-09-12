@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import json
 import pickle
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -50,18 +50,38 @@ class LoaderValidationError(ValueError):
     """The pickle loaded but does not have the structure Phase 2 requires."""
 
 
-@dataclass(frozen=True)
+class _Sealed:
+    """Private construction token: only `VerifiedRelease.open` holds a reference."""
+
+
+_SEAL = _Sealed()
+
+
 class VerifiedRelease:
     """Handle proving that `raw_root` matched its committed baseline when opened.
 
-    Obtain via `VerifiedRelease.open(...)`; the constructor is not a bypass
-    because `load_participant` re-verifies each file against the manifest.
+    The ONLY way to obtain one is `VerifiedRelease.open(...)`, which loads the
+    committed baseline, verifies the whole raw tree against it and stores the
+    baseline privately. Direct construction with caller-supplied hashes is
+    rejected; the stored hashes are not exposed for mutation. `verified_path`
+    re-hashes every requested file against the stored baseline.
     """
 
-    raw_root: Path
-    manifests_dir: Path
-    release_dir: Path
-    expected_hashes: dict[str, str] = field(repr=False)
+    __slots__ = ("raw_root", "manifests_dir", "release_dir", "_expected", "__weakref__")
+
+    def __init__(self, raw_root: Path, manifests_dir: Path, release_dir: Path, expected: dict[str, str], *, _seal: object = None) -> None:
+        if _seal is not _SEAL:
+            raise RawIntegrityError("VerifiedRelease cannot be constructed directly; use VerifiedRelease.open(), which performs the verification")
+        object.__setattr__(self, "raw_root", raw_root)
+        object.__setattr__(self, "manifests_dir", manifests_dir)
+        object.__setattr__(self, "release_dir", release_dir)
+        object.__setattr__(self, "_expected", dict(expected))
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        raise AttributeError("VerifiedRelease is immutable")
+
+    def __repr__(self) -> str:
+        return f"VerifiedRelease(raw_root={self.raw_root!s}, n_files={self.n_files})"
 
     @classmethod
     def open(cls, raw_root: Path = DATA_RAW / "wesad", manifests_dir: Path = MANIFESTS, release_subdir: str = "WESAD") -> "VerifiedRelease":
@@ -77,20 +97,31 @@ class VerifiedRelease:
         release_dir = raw_root / release_subdir
         if not release_dir.is_dir():
             raise RawIntegrityError(f"release directory {release_dir} not found inside verified raw root")
-        return cls(raw_root=raw_root, manifests_dir=Path(manifests_dir), release_dir=release_dir, expected_hashes=expected)
+        return cls(raw_root, Path(manifests_dir), release_dir, expected, _seal=_SEAL)
+
+    @property
+    def n_files(self) -> int:
+        return len(self._expected)
+
+    def expected_hash(self, relative: str) -> str:
+        """Baseline SHA-256 of one release-relative file (read-only accessor)."""
+        try:
+            return self._expected[relative]
+        except KeyError:
+            raise RawIntegrityError(f"{relative} is not part of the committed baseline") from None
 
     def verified_path(self, relative: str) -> Path:
         """Resolve a release-relative path, re-hash it, and confirm it matches the baseline."""
         path = (self.raw_root / relative).resolve()
         if self.raw_root not in path.parents:
             raise RawIntegrityError(f"{path} is outside the verified raw root {self.raw_root}")
-        if relative not in self.expected_hashes:
+        if relative not in self._expected:
             raise RawIntegrityError(f"{relative} is not part of the committed baseline; refusing to load")
         if not path.is_file():
             raise RawIntegrityError(f"{path} listed in the baseline but missing on disk")
         actual = integrity.sha256_file(path)
-        if actual != self.expected_hashes[relative]:
-            raise RawIntegrityError(f"{relative} hash {actual[:12]}... != baseline {self.expected_hashes[relative][:12]}...; refusing to load")
+        if actual != self._expected[relative]:
+            raise RawIntegrityError(f"{relative} hash {actual[:12]}... != baseline {self._expected[relative][:12]}...; refusing to load")
         return path
 
 
@@ -125,6 +156,11 @@ class WesadParticipant:
         return min(self.stream_durations_s.values())
 
 
+def _is_real_numeric(dtype: np.dtype) -> bool:
+    """Integer or real floating dtype only: complex, bool, object and strings are rejected."""
+    return bool(np.issubdtype(dtype, np.integer) or np.issubdtype(dtype, np.floating))
+
+
 def _as_2d(arr: np.ndarray, name: str) -> np.ndarray:
     arr = np.asarray(arr)
     if arr.ndim == 1:
@@ -132,6 +168,16 @@ def _as_2d(arr: np.ndarray, name: str) -> np.ndarray:
     if arr.ndim != 2:
         raise LoaderValidationError(f"wrist.{name}: expected a 1-D or 2-D array, got ndim={arr.ndim}")
     return arr
+
+
+def _as_label_vector(lab: Any) -> np.ndarray:
+    """Accept (n,) or (n,1) only; never flatten arbitrary multidimensional label arrays."""
+    lab = np.asarray(lab)
+    if lab.ndim == 2 and lab.shape[1] == 1:
+        lab = lab[:, 0]
+    if lab.ndim != 1:
+        raise LoaderValidationError(f"label: expected a vector (n,) or (n,1), got shape {lab.shape}")
+    return lab
 
 
 def validate_participant_dict(d: Any, expected_id: str) -> dict[str, Any]:
@@ -151,16 +197,16 @@ def validate_participant_dict(d: Any, expected_id: str) -> dict[str, Any]:
     for m in WRIST_MODALITIES:
         check(m in wrist, f"wrist.{m} present")
         arr = _as_2d(wrist[m], m)
-        check(np.issubdtype(arr.dtype, np.number), f"wrist.{m} numeric dtype (got {arr.dtype})")
+        check(_is_real_numeric(arr.dtype), f"wrist.{m} real-valued numeric dtype (got {arr.dtype})")
         check(arr.shape[1] == WRIST_CHANNELS[m], f"wrist.{m} has {WRIST_CHANNELS[m]} channel(s) (got {arr.shape[1]})")
         check(arr.shape[0] > 0, f"wrist.{m} non-empty")
         n_nonfinite = int((~np.isfinite(arr)).sum())
         report[f"wrist.{m}.n_nonfinite"] = n_nonfinite
         check(n_nonfinite == 0, f"wrist.{m} all finite (found {n_nonfinite} non-finite)")
 
-    lab = np.asarray(d["label"]).ravel()
+    lab = _as_label_vector(d["label"])
     check(lab.size > 0, "label vector non-empty")
-    check(np.issubdtype(lab.dtype, np.number), f"label numeric dtype (got {lab.dtype})")
+    check(_is_real_numeric(lab.dtype), f"label real-valued numeric dtype (got {lab.dtype})")
     check(bool(np.all(np.isfinite(lab))), "label finite")
     check(bool(np.array_equal(lab, np.round(lab))), "label integer-valued")
     codes = {int(c) for c in np.unique(lab)}
@@ -198,11 +244,11 @@ def load_participant(participant_id: str, release: VerifiedRelease | None = None
         bvp=np.ascontiguousarray(_as_2d(wrist["BVP"], "BVP")[:, 0], dtype=np.float64),
         eda=np.ascontiguousarray(_as_2d(wrist["EDA"], "EDA")[:, 0], dtype=np.float64),
         temp=np.ascontiguousarray(_as_2d(wrist["TEMP"], "TEMP")[:, 0], dtype=np.float64),
-        label=np.ascontiguousarray(np.round(np.asarray(d["label"]).ravel()).astype(np.int16)),
+        label=np.ascontiguousarray(np.round(_as_label_vector(d["label"])).astype(np.int16)),
         rates_hz=dict(WRIST_RATES_HZ),
         label_rate_hz=LABEL_RATE_HZ,
         source_file=relative,
-        source_sha256=rel.expected_hashes[relative],
+        source_sha256=rel.expected_hash(relative),
         validation=report,
     )
     for arr in (part.acc, part.bvp, part.eda, part.temp, part.label):

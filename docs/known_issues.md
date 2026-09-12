@@ -61,10 +61,16 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 - **Mitigation:** beat/HR columns are `feature_provisional` (model_feature false) in the schema (D-024). Raw BVP statistics remain features. Options for later (all label-free): stricter IBI-consistency gating per window, a validated PPG detector (e.g. from NeuroKit2, with version pinned), or dropping HR entirely. Any change is a schema-version bump and a decision entry.
 - **Status:** open
 
-### KI-22 ACC clipping flag fires on 12.3 % of windows
+### KI-22 ACC near-rail flag fires on 12.3 % of windows
 - **Severity:** LOW (informational)
-- **Issue:** `q_acc_clipped` (any |count| >= 127, i.e. at the +-2 g rail) is True for 12.3 % of the 1442 windows. This is expected during vigorous movement and is not a defect; it is recorded so that activity-related analyses can stratify or check sensitivity to clipped windows. The 127-count threshold is provisional.
+- **Issue:** `q_acc_near_rail` (renamed from `q_acc_clipped` in schema 1.1.0: at least one sample with |count| >= 127, i.e. near the +-2 g rail - NOT proven clipping) is True for 12.3 % of the 1442 windows. Expected during vigorous movement; recorded so activity analyses can stratify or check sensitivity. Never an exclusion criterion. The 127-count threshold is provisional.
 - **Status:** accepted (flag only)
+
+### KI-23 LOPO predictions are not a clean development set for Study B
+- **Severity:** HIGH for Study B (recorded now; not solved)
+- **Issue:** Pooling Phase-3 LOPO predictions from the other 14 participants to calibrate or select a policy for outer participant p is invalid: each of those predictions came from a model trained on 14 participants that INCLUDED p. Study B must generate outer-fold-specific development predictions (e.g. nested inner-fold predictions within the 14 outer-training participants) so that nothing seen by the development stage was trained with p.
+- **Plan:** design in the Study-B prompt (T-08); do not reuse Phase-3 outer predictions as development data.
+- **Status:** open
 
 ## Modelling
 

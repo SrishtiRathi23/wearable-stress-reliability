@@ -174,6 +174,53 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 - **Not decided here:** anything in T-04..T-10; whether provisional HR columns are ever promoted.
 - **Status:** agreed (feature set frozen for Phase 3 unless amended)
 
+### D-025 - EDA derived features have recording-context dependence (ACCEPTED offline design choice)
+- **Date:** 2026-09-12 (Phase-2 closeout)
+- **Category:** DESIGN CHOICE
+- **Decision:** The EDA tonic estimate is a zero-phase (forward-backward) Butterworth low-pass over the whole participant recording; phasic = raw - tonic; SCR-like peaks are detected on the phasic component. Consequently `eda_tonic_*`, `eda_phasic_*` and `eda_scr_*` are influenced by signal before and after the window (a 0.05-Hz filter has a long impulse response). This is accepted as an OFFLINE approximation for the primary participant-held-out analysis because it is deterministic and label-independent (it is not reference-label leakage). These features must NOT be described as strictly window-local, as causal, or as deployable real-time features; a separate causal/online implementation would be needed for that. Earlier wording ("a few seconds of neighbouring signal") was incorrect and has been removed.
+- **Status:** agreed
+
+### D-026 - SCR missingness contract
+- **Date:** 2026-09-12
+- **Category:** DESIGN CHOICE
+- **Decision:** In a window with no detected SCR-like peak: `eda_scr_count` = 0, `eda_scr_amp_sum` = 0 (sum over an empty set), `eda_scr_amp_mean` and `eda_scr_amp_max` = NULL (amplitude is undefined when no event exists). Nulls are never replaced by zero in the canonical table. In Phase 3 these nulls are imputed only inside the training partition of the model pipeline. Ordinary zero-peak missingness (`q_eda_decomposition_ok` True) must remain distinguishable from a decomposition/extraction failure (`q_eda_decomposition_ok` False or `q_feature_error` non-empty, where all decomposition-derived EDA features are null).
+- **Status:** agreed
+
+### D-027 - BVP / HR contract
+- **Date:** 2026-09-12
+- **Category:** DESIGN CHOICE
+- **Decision:** The 8 beat/HR-derived columns (`bvp_beat_count`, `bvp_valid_ibi_count`, `bvp_beat_coverage`, `hr_mean/median/std/min/max`) stay in the table for audit with role `feature_provisional` (model_feature false) and must not enter Phase-3 models. The pulse detector is not tuned or replaced now (KI-21). The 7 raw/simple BVP statistics remain eligible model features. `q_bvp_hr_available` means only that the detector met mechanical count/coverage criteria; it is not a claim of physiological validity.
+- **Status:** agreed
+
+### D-028 - Outer/inner evaluation design (resolves T-04)
+- **Date:** 2026-09-12
+- **Category:** DESIGN CHOICE (frozen)
+- **Outer:** leave-one-participant-out, 15 folds. For outer participant p: p is completely untouched test data; the other 14 form the outer training/development set. No outer-test participant may influence feature imputation, scaling, feature selection, hyperparameters, classification threshold, calibration, abstention policy or model choice.
+- **Inner (model selection):** 4-fold participant-grouped validation within the 14 outer-training participants using `sklearn.model_selection.StratifiedGroupKFold` (group = participant_id; stratified on the analysis label), computed from outer-training data only, with the named seed stream `inner_split`. Exact participant memberships are saved to split manifests and validated before use (participant-disjoint, every outer-training participant appears in exactly one validation fold). The SAME inner folds are reused across all candidate models.
+- **Inner score:** balanced accuracy computed separately for each validation participant; score(candidate) = equal-weight mean of these participant-level values over all 14 inner-validation participant appearances. Never window-pooled; never a mean of fold means (folds hold unequal participant counts).
+- **Status:** agreed. `configs/base.yaml: evaluation` now carries these values.
+
+### D-029 - Phase-3 modelling contract (frozen before any model code)
+- **Date:** 2026-09-12
+- **Category:** DESIGN CHOICE
+- **Purpose:** comparative baseline analysis. Candidates: prevalence/majority baseline, regularised Logistic Regression, constrained Random Forest, constrained XGBoost. No candidate is discarded for scoring lower; predictions from every candidate are saved because Study A asks whether selective label observation alters apparent performance, ranking and selection.
+- **Model inputs:** the exact ordered `role == "feature"` list from `data/manifests/wesad_feature_schema.json` (currently 59), obtained through `wsr.features.schema.select_model_features`, which fails on a missing feature, a duplicate column, or any schema/table disagreement. Never "all numeric columns", never `FEATURE_NAMES` (contains provisional columns), never quality/ID/time/label/eligibility/provenance fields.
+- **Supervised rows:** training and metric computation use `binary_eligible == True` rows only.
+- **Threshold:** fixed 0.5 on the positive-class probability; not tuned in Phase 3 (threshold tuning belongs to later policy-selection experiments). Raw positive-class probabilities are saved wherever `predict_proba` exists. Majority baseline: predicts the training-partition majority analysis label for every window and outputs the training-partition prevalence of class 1 as its constant probability.
+- **Preprocessing:** imputation (median from the training partition) and, for Logistic Regression only, standard scaling, are fitted inside EVERY training partition: inner-training participants -> applied to inner-validation participants; after hyperparameter selection, refit on all 14 outer-training participants -> applied to the untouched outer participant. Never fitted globally. Tree models are not scaled. No iterative/KNN imputation. If a model feature is entirely missing in a training partition, its imputation constant is 0.0 and the event is logged in the run manifest (the feature is then constant in that partition); the pipeline never consults validation/test data.
+- **Class / sample weights:** none invented silently. `class_weight in {None, "balanced"}` may appear as a predeclared grid option for LR and RF; any XGBoost weighting is predeclared and computed from training data only. Participants are never weighted using outer-test information.
+- **Grids:** small and predeclared in the Phase-3 prompt; no Optuna, Bayesian optimisation, large random search, neural networks or broad feature selection.
+- **Prediction output (for Study A):** for every outer fold and every candidate, predictions/probabilities for ALL complete windows of the held-out participant (the full label-independent candidate frame), with `binary_eligible`, `analysis_label` and raw-label provenance preserved as separate columns. Phase-3 metrics are computed only where the binary reference exists.
+- **Study-B warning (recorded, not solved):** global LOPO predictions pooled from "other participants" are NOT a clean calibration/development set for one outer participant, because some of those predictions come from models whose training included that participant. Study B needs outer-fold-specific development predictions with proper independence.
+- **Status:** agreed
+
+### D-030 - Phase-2 closeout engineering fixes (independent review)
+- **Date:** 2026-09-12
+- **Category:** ENGINEERING
+- **Fixes:** (1) `VerifiedRelease` can no longer be constructed by callers - only `VerifiedRelease.open()` (which loads the committed baseline and verifies the raw tree) can create one; stored hashes are private and immutable; every load still re-hashes the pickle. (2) Signal arrays must be real-valued integer/float dtypes (complex/bool rejected); label arrays must be (n,) or (n,1), never silently flattened. (3) Config contract enforced: `params_from_config` rejects any config that contradicts what Phase 2 implements (device, 60/60 s grid, anchor, label independence, eligibility rule, mixed-window policy, feature families, HRV off, counts_per_g 64, positive/negative codes 2/1, ineligible codes, preserve_raw_label); the binary mapping and counts-per-g are read from config and validated rather than hard-coded. (4) `q_acc_clipped` renamed `q_acc_near_rail` (near the +-2 g rail, not proven clipping; informational only); the constant-signal check is now per axis over time (a repeated [0,0,64] vector is constant). Schema version 1.1.0.
+- **Canonical table impact:** rebuilt; every value in every shared column is identical to the 1.0.0 table and the renamed flag column is value-identical; zero constant-flagged windows before and after. The table SHA-256 changed ONLY because of the column rename: `f786c304...` -> `ebc0ccbde2062a77...`.
+- **Status:** agreed
+
 ---
 
 ## Open decisions (TODO before the affected stage)
@@ -183,7 +230,7 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 | T-01 | ~~WESAD device stream~~ RESOLVED (D-021): wrist E4 primary; chest optional sensitivity | feature extraction | `configs/wesad.yaml: device` |
 | T-02 | ~~Raw label codes~~ RESOLVED as FACT (D-019); ~~binary mapping~~ RESOLVED (D-021): 1 = baseline reference, 2 = protocol-stress reference, {0,3,4,5,6,7} ineligible | labels | `configs/wesad.yaml: labels` |
 | T-03 | ~~Usable participants~~ RESOLVED (D-019, D-021): all 15 kept; no caveat-based exclusion | splits | `docs/dataset_notes.md` |
-| T-04 | LOPO vs grouped k-fold outer split; inner fold count. NOT decided - `configs/base.yaml: evaluation.outer_split` is deliberately `null` so no executable default masquerades as an agreed choice | baseline | `configs/base.yaml: evaluation` |
+| T-04 | ~~Outer/inner split~~ RESOLVED (D-028): LOPO outer (15 folds); inner 4-fold StratifiedGroupKFold on the 14 outer-training participants; participant-level equal-weight balanced-accuracy selection score | baseline | `configs/base.yaml: evaluation` |
 | T-05 | Episode / selection-unit definition on WESAD; candidate generation must itself be label-independent, not just the final mask function. Audit CONFIRMS KI-05: exactly 1 baseline + 1 stress block per participant, so protocol-block selection would be an extremely coarse, condition-confounded annotation model (see KI-05 for the precise limitation). The primary candidate FRAME is now fixed (D-021: time-only 60-s grid at pkl t=0); what remains open is the selection UNIT/grouping on that grid, the annotation budgets, random-mask repetition count, and how budget is charged for windows outside baseline/stress. Engineer's recommendation (not adopted): fixed-length contiguous pseudo-episodes (e.g. 3-5 min) as the primary unit with detector-proposed episodes as a comparison | Study A | `research_protocol.md` S5; KI-05; KI-06 |
 | T-06 | Budget unit and budget grid | Study A/B/C | `configs/base.yaml: observation_policies` |
 | T-07 | Detector definition for `detector_triggered` | Study A | `research_protocol.md` S5 |

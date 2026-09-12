@@ -41,7 +41,7 @@ The full protocol, hypotheses, and open decisions are in [`docs/research_protoco
 
 ## Current status
 
-**Phase 2 complete (verified loading, time-only windowing, quality flags, feature table).** `python -m wsr.features.build_features` regenerates `data/processed/wesad_windows_60s.parquet` (1442 windows x 117 columns, 59 model features; schema and processing manifest under `data/manifests/`). No model has been trained and no predictive number exists. Next step (pending approval): Phase 3 participant-independent baseline pipelines, after T-04 (split) is decided.
+**Phase 2 complete (verified loading, time-only windowing, quality flags, feature table).** `python -m wsr.features.build_features` regenerates `data/processed/wesad_windows_60s.parquet` (1442 windows x 117 columns, 59 model features; schema and processing manifest under `data/manifests/`). No model has been trained and no predictive number exists. Phase-3 contract frozen (D-028/D-029: LOPO outer, 4-fold StratifiedGroupKFold inner, 59-feature allowlist, threshold 0.5, training-only preprocessing, complete-frame predictions). Next step (pending approval): Phase 3 baseline pipelines.
 
 ## Setup
 

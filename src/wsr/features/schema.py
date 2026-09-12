@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 
-SCHEMA_VERSION = "1.0.0"
+SCHEMA_VERSION = "1.1.0"  # 1.1.0: q_acc_clipped -> q_acc_near_rail; per-axis constant check; no feature value changes
 
 
 @dataclass(frozen=True)
@@ -86,16 +86,56 @@ def quality_defs() -> list[ColumnDef]:
             meta(f"q_{mod}_constant", mod, "True if the signal range within the window is below constant_eps", "bool", role="quality"),
         ]
     defs += [
-        meta("q_acc_clipped", "acc", "Any |raw count| >= clip threshold (provisional; E4 range is +-2 g = +-128 counts)", "bool", role="quality"),
+        meta("q_acc_near_rail", "acc", "At least one sample with |raw count| >= acc_rail_counts (provisional 127; E4 range +-2 g = +-128 counts). Near-rail, not proven clipping; informational, never an exclusion criterion. Was q_acc_clipped in schema 1.0.0.", "bool", role="quality"),
         meta("q_eda_below_plausible", "eda", "Any EDA sample below eda_min_plausible_us (provisional threshold)", "bool", role="quality"),
         meta("q_temp_out_of_range", "temp", "Any TEMP sample outside temp_plausible_range_c (provisional)", "bool", role="quality"),
         meta("q_eda_decomposition_ok", "eda", "Recording-level tonic/phasic decomposition succeeded for this participant", "bool", role="quality"),
         meta("q_bvp_pulse_detection_ok", "bvp", "Recording-level pulse-peak detection ran for this participant", "bool", role="quality"),
-        meta("q_bvp_hr_available", "bvp", "Enough plausible beats in the window for HR summaries (>= min_beats_for_hr and coverage >= min_beat_coverage)", "bool", role="quality"),
+        meta("q_bvp_hr_available", "bvp", "The in-house detector met MECHANICAL count/coverage criteria (>= min_beats_for_hr valid IBIs and coverage >= min_beat_coverage). Says nothing about physiological validity of the beats (KI-21).", "bool", role="quality"),
         meta("q_feature_error", "window", "Exception text if any feature family failed for this window ('' otherwise)", "string", role="quality"),
         meta("q_structural_ok", "window", "All modality counts ok, all finite, no constant signal, no feature error. NOT a physiological-credibility claim.", "bool", role="quality"),
     ]
     return defs
+
+
+class FeatureContractError(RuntimeError):
+    """The table does not match the committed feature schema."""
+
+
+def model_feature_columns_from_schema(schema: dict) -> list[str]:
+    """Exact ordered allowlist of model inputs from a schema document (role == 'feature')."""
+    cols = [c["name"] for c in schema["columns"] if c.get("role") == "feature"]
+    declared = schema.get("model_feature_columns")
+    if declared is not None and declared != cols:
+        raise FeatureContractError("schema model_feature_columns disagrees with column roles")
+    if len(set(cols)) != len(cols):
+        raise FeatureContractError("duplicate model feature names in schema")
+    return cols
+
+
+def select_model_features(table, schema: dict):
+    """Return table[model features] in schema order; fail loudly on any disagreement.
+
+    Rejects: missing required feature, duplicate column names in the table,
+    a provisional/quality/reference/provenance column in the allowlist, or a
+    table whose declared column set disagrees with the schema.
+    """
+    allow = model_feature_columns_from_schema(schema)
+    table_cols = list(table.columns)
+    if len(set(table_cols)) != len(table_cols):
+        dup = sorted({c for c in table_cols if table_cols.count(c) > 1})
+        raise FeatureContractError(f"duplicate columns in table: {dup}")
+    missing = [c for c in allow if c not in table_cols]
+    if missing:
+        raise FeatureContractError(f"required model features missing from table: {missing}")
+    schema_cols = [c["name"] for c in schema["columns"]]
+    if table_cols != schema_cols:
+        raise FeatureContractError("table columns differ from the committed schema (order or membership)")
+    roles = {c["name"]: c["role"] for c in schema["columns"]}
+    bad = [c for c in allow if roles.get(c) != "feature"]
+    if bad:
+        raise FeatureContractError(f"non-feature columns in allowlist: {bad}")
+    return table[allow]
 
 
 def all_column_defs(feature_defs: list[ColumnDef]) -> list[ColumnDef]:

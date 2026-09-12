@@ -93,3 +93,13 @@ Runners under `src/wsr/experiments/` should write a machine-readable copy of the
 - Notes: time-only 60-s grid at t=0; eligibility after the grid; 434 eligible (282 + 152) recomputed, matching the review expectation.
 - Anomalies: in-house pulse detector not beat-accurate (KI-21) -> HR columns provisional; ACC clipping flag 12.3 % (KI-22).
 - Interpretation: feature table is model-ready for participant-independent pipelines; no outcome-driven engineering was performed.
+
+### 2026-09-12_wesad_phase2_closeout_rebuild
+
+- Date/time: 2026-09-12
+- Git commit: (Phase-2 closeout commit)
+- Dataset: wesad; raw baseline verified unchanged
+- Participants used: all 15; exclusions: none
+- Notes: canonical table rebuilt under schema 1.1.0 after the closeout fixes (q_acc_clipped -> q_acc_near_rail; per-axis constant check). Before/after comparison: all shared columns value-identical, renamed flag value-identical, 0 constant-flagged windows both times. Counts unchanged (1442 / 282 / 152 / 785 / 223).
+- Result artifacts: data/processed/wesad_windows_60s.parquet sha256 ebc0ccbde2062a7727dcd7f2d5f3ad3588dfe32639368e4fc08ec39bdb084a32; manifests regenerated.
+- Interpretation: no scientific change; hash change is purely the column rename.

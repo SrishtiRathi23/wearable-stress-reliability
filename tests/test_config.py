@@ -42,7 +42,8 @@ def test_wesad_config_open_and_resolved_decisions():
     cfg = load_config("wesad")
     todos = find_todos(cfg)
     # still open
-    assert "evaluation.outer_split" in todos  # T-04: no executable default may masquerade as agreed
+    assert cfg["evaluation"]["outer_split"] == "leave-one-participant-out" and cfg["evaluation"]["inner_folds"] == 4  # T-04 resolved (D-028)
+    assert cfg["phase3"]["classification_threshold"] == 0.5 and cfg["phase3"]["prediction_output"] == "all_complete_windows_of_held_out_participant"
     assert "episodes.definition" in todos  # T-05
     assert "observation_policies.budget_unit" in todos and "observation_policies.detector" in todos  # T-06, T-07
     # frozen by D-021

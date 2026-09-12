@@ -16,7 +16,7 @@ import numpy as np
 @dataclass(frozen=True)
 class QualityParams:
     constant_eps: float = 1e-9
-    acc_clip_counts: float = 127.0  # provisional: |count| >= 127 treated as at the +-2 g rail
+    acc_rail_counts: float = 127.0  # provisional: any |count| >= 127 is "near the +-2 g rail" (not proven clipping)
     eda_min_plausible_us: float = 0.01  # provisional
     temp_plausible_range_c: tuple[float, float] = (20.0, 45.0)  # provisional
 
@@ -34,22 +34,31 @@ def modality_flags(mod: str, seg: np.ndarray, rate_hz: float, length_s: float, p
     n = int(seg.shape[0])
     finite = np.isfinite(seg)
     finite_fraction = float(finite.mean()) if seg.size else 0.0
-    if n and finite.any():
-        vals = seg[finite] if seg.ndim == 1 else seg[np.all(finite, axis=1)] if seg.ndim == 2 else seg
-        rng = float(np.max(vals) - np.min(vals)) if vals.size else 0.0
-    else:
-        rng = 0.0
+    # Temporal constancy is judged per channel: a window is constant only if EVERY
+    # channel's range over time is below eps (a repeated [0, 0, 64] vector is constant
+    # even though its pooled value range is 64).
+    constant = False
+    if n:
+        cols = seg[:, None] if seg.ndim == 1 else seg
+        ranges = []
+        for k in range(cols.shape[1]):
+            v = cols[:, k][np.isfinite(cols[:, k])]
+            ranges.append(float(v.max() - v.min()) if v.size else 0.0)
+        constant = all(r < params.constant_eps for r in ranges)
     return {
         f"q_{mod}_n_samples": n,
         f"q_{mod}_count_ok": n == expected_count(rate_hz, length_s),
         f"q_{mod}_finite_fraction": finite_fraction,
-        f"q_{mod}_constant": bool(n > 0 and rng < params.constant_eps),
+        f"q_{mod}_constant": bool(constant),
     }
 
 
 def acc_flags(acc_counts: np.ndarray, params: QualityParams) -> dict:
+    """q_acc_near_rail: at least one sample has |count| >= acc_rail_counts. This is
+    'near the measurement rail', NOT proven clipping; informational only, never an
+    exclusion criterion. (Renamed from q_acc_clipped in schema 1.1.0.)"""
     a = np.asarray(acc_counts, dtype=np.float64)
-    return {"q_acc_clipped": bool(a.size and np.any(np.abs(a[np.isfinite(a)]) >= params.acc_clip_counts))}
+    return {"q_acc_near_rail": bool(a.size and np.any(np.abs(a[np.isfinite(a)]) >= params.acc_rail_counts))}
 
 
 def eda_flags(eda: np.ndarray, params: QualityParams) -> dict:
