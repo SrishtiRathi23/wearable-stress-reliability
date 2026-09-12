@@ -7,10 +7,10 @@
  "n_model_features": 59,
  "schema_version": "1.0.0",
  "schema_path": "data\\manifests\\wesad_feature_schema.json",
- "generated_utc": "2026-09-12T14:27:53+00:00",
+ "generated_utc": "2026-09-12T14:29:07+00:00",
  "git": {
-  "commit": "b17cf025210083da90030bedd22288f910c48fad",
-  "dirty_tree": true
+  "commit": "6ed455753ec50e32f54d1378854d80ce20f6c426",
+  "dirty_tree": false
  },
  "raw_checksum_manifest": {
   "path": "E:\\Tinaas Minor Project\\data\\manifests\\raw_checksums_wesad.json",
