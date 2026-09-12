@@ -1,0 +1,80 @@
+# ---------------------------------------------------------------------------
+# Base configuration - shared defaults. Dataset configs (wesad.yaml, nurse.yaml)
+# are merged on top of this file by wsr.utils.config.load_config().
+#
+# Convention: any value marked TODO is an UNRESOLVED scientific decision and
+# must be settled (and logged in docs/decisions.md) before the code that uses
+# it is run for a reported result.
+# ---------------------------------------------------------------------------
+
+project:
+  name: wearable-stress-reliability
+  title: "Label-Selection-Aware Evaluation of Calibration and Abstention in Wearable Stress Prediction"
+
+# Single global seed; every stochastic component derives its RNG from this
+# via wsr.utils.seeds so a run is reproducible from (config, commit, data, manifest).
+seed: 42
+
+paths:
+  data_raw: data/raw
+  data_interim: data/interim
+  data_processed: data/processed
+  manifests: data/manifests
+  results: results
+
+windowing:
+  # DESIGN CHOICE (not a claim of optimality): 60 s non-overlapping windows.
+  length_s: 60
+  step_s: 60
+  # Planned sensitivity analysis; run only after the central pipeline works.
+  sensitivity_lengths_s: [30, 60, 120]
+
+features:
+  # Feature families are enabled per dataset config depending on signal availability.
+  families: [eda, cardiac, temperature, activity, quality]
+  # HRV/IBI features are computed ONLY when beat coverage in the window passes
+  # a quality threshold. Threshold is TODO (decide after the WESAD audit).
+  hrv:
+    enabled: false
+    min_beat_coverage: null   # TODO
+
+evaluation:
+  # NON-NEGOTIABLE: participant-level outer holdout.
+  outer_split: leave-one-participant-out   # TODO: confirm LOPO vs grouped k-fold after participant count is verified
+  inner_split: grouped-k-fold              # grouped by participant, within training participants only
+  inner_folds: null                        # TODO
+  # Random-row splits may be run ONLY as a clearly-labelled diagnostic, never as a primary result.
+  allow_random_row_split_diagnostic: true
+
+models:
+  candidates: [majority, logistic, random_forest, xgboost]
+  # Hyperparameter grids are deliberately small; tuned on inner grouped splits only.
+  logistic: {}
+  random_forest: {}
+  xgboost: {}
+
+calibration:
+  method: sigmoid          # Platt-type first; isotonic only with enough independent dev data
+  isotonic_allowed: false
+  # Calibration data must come from development participants only.
+  fit_on: inner_dev_participants
+
+abstention:
+  policies: [always_predict, raw_confidence, calibrated_confidence, signal_quality]
+  # Thresholds are chosen on development labels only and then LOCKED.
+  # Target coverage levels for reporting are TODO.
+  report_coverage_levels: null
+
+observation_policies:
+  # Study A/B/C. Names are placeholders until the mask builders are implemented.
+  policies: [full_reference, random, detector_triggered, duration_preferred, mixed]
+  # Budget unit: TODO (labelled episodes vs labelled duration vs labelled windows).
+  budget_unit: null
+  budgets: null
+  # Study C provisional mixtures: fraction of the labelling budget reserved for random audit.
+  audit_random_fractions: [0.0, 0.1, 0.2, 0.3, 0.5]
+  # Detector used to propose events must be trained WITHOUT the held-out participant.
+  detector: null           # TODO: define (EDA-only score? held-out model?)
+
+logging:
+  level: INFO

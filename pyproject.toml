@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wsr"
+version = "0.0.1"
+description = "Label-selection-aware evaluation of calibration and abstention in wearable stress prediction"
+readme = "README.md"
+# Python 3.11 was the preference in the project brief; 3.11 is not installed on
+# the dev laptop. 3.12 is installed (via uv) and is the safest of the available
+# versions for the scientific stack (xgboost / scipy / neurokit2 wheels).
+# See docs/decisions.md D-013.
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "scipy>=1.11",
+    "scikit-learn>=1.4",
+    "pyyaml>=6.0",
+    "joblib>=1.3",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+# Installed only when the corresponding stage of the project is reached.
+dev = ["pytest>=8.0"]
+models = ["xgboost>=2.0"]
+signals = ["neurokit2>=0.2.7"]
+notebooks = ["jupyter", "ipykernel"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

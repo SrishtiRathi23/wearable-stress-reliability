@@ -1,0 +1,49 @@
+# ---------------------------------------------------------------------------
+# Nurse Stress dataset - bounded real-world hospital case study.
+# Nothing here is verified yet. src/wsr/data/audit_nurse.py must confirm file
+# layout, timestamp units, survey/label semantics and per-nurse coverage.
+# ---------------------------------------------------------------------------
+
+dataset:
+  name: nurse
+  raw_dir: data/raw/nurse
+  citation: "Hosseini et al. 2022, Scientific Data"
+
+signals:
+  # Expected Empatica E4 streams; VERIFY presence and sampling rates per file.
+  expected: [EDA, BVP, HR, IBI, TEMP, ACC]
+  sampling_rates_hz: null    # TODO: fill from audit
+
+timestamps:
+  # Timestamp unit/timezone/epoch and E4 file header conventions are TODO and
+  # are a Gate-1 blocker: no modelling until alignment is justified.
+  unit: null                 # TODO
+  timezone: null             # TODO
+
+labels:
+  # RESEARCH INVARIANT #1: unlabelled hospital periods are UNKNOWN, never "no stress".
+  unlabelled_value: unknown
+  unknown_is_negative: false     # must stay false
+  # Raw survey / event label values and their meaning: TODO after audit.
+  raw_values: null               # TODO
+  # Mapping to the binary task used in the case study: TODO, pre-declare before modelling.
+  binary_map: null               # TODO
+  provenance_columns_required: [nurse_id, session_id, event_id, label_source]
+
+participants:
+  all: null                  # TODO
+  excluded: []
+  exclusion_log: data/manifests/exclusions_nurse.csv
+
+case_study:
+  # Analyses planned in docs/research_protocol.md, Study D. Which of these are
+  # feasible depends on validated-event counts per nurse.
+  analyses:
+    - performance_on_validated_events
+    - output_coverage
+    - accepted_predictions_labelled_fraction
+    - per_nurse_variation
+    - activity_strata
+    - signal_quality_strata
+    - context_strata_if_counts_allow
+    - sensitivity_bounds_for_unknown_periods

@@ -1,0 +1,6 @@
+# Normalise line endings so checksums and diffs are identical on Windows and Linux.
+* text=auto eol=lf
+*.png binary
+*.pdf binary
+*.pkl binary
+*.parquet binary

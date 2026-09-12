@@ -1,0 +1,78 @@
+# ---------------------------------------------------------------------------
+# Raw datasets and large generated artifacts must NEVER be committed.
+# Keep directory skeletons via .gitkeep and small README/manifest files only.
+# ---------------------------------------------------------------------------
+
+# Data: raw is read-only and never versioned; interim/processed are regenerable.
+data/raw/**
+!data/raw/README.md
+!data/raw/*/
+!data/raw/*/.gitkeep
+data/interim/**
+!data/interim/.gitkeep
+data/processed/**
+!data/processed/.gitkeep
+# Manifests (split lists, checksums, exclusion logs) ARE versioned — they are
+# small and required for reproducibility.
+!data/manifests/**
+
+# Results: large artifacts are not versioned; small tables/figures may be added
+# explicitly with `git add -f` once they belong to a reported result.
+results/predictions/**
+!results/predictions/.gitkeep
+results/models/**
+!results/models/.gitkeep
+results/logs/**
+!results/logs/.gitkeep
+results/figures/**
+!results/figures/.gitkeep
+results/tables/**
+!results/tables/.gitkeep
+
+# Common dataset archive / binary formats (belt and braces)
+*.pkl
+*.pickle
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.npy
+*.npz
+*.joblib
+*.zip
+*.tar
+*.tar.gz
+*.7z
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environments
+.venv/
+venv/
+env/
+.python-version
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/**/*.ipynb_checkpoints
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code local settings (keep shared settings if any are added later)
+.claude/settings.local.json

@@ -1,0 +1,44 @@
+# ---------------------------------------------------------------------------
+# WESAD - primary controlled benchmark and primary label-observation experiment.
+# Every value below that is marked TODO or UNVERIFIED must be checked against the
+# official WESAD readme and the actual files by src/wsr/data/audit_wesad.py
+# before it is used.
+# ---------------------------------------------------------------------------
+
+dataset:
+  name: wesad
+  raw_dir: data/raw/wesad
+  citation: "Schmidt et al. 2018, ICMI"
+
+# Which device stream to use. The Nurse dataset is wrist (Empatica E4), so the
+# wrist stream is the natural comparator, but this is an unresolved decision.
+device: null                 # TODO: "wrist" (E4) | "chest" (RespiBAN) | both
+
+signals:
+  # Availability and sampling rates to be VERIFIED by the audit, not assumed.
+  wrist: null                # TODO (expected: ACC, BVP, EDA, TEMP)
+  chest: null                # TODO (expected: ACC, ECG, EMG, EDA, Temp, Resp)
+  sampling_rates_hz: null    # TODO: fill from audit
+
+labels:
+  # Raw label integers as stored in the WESAD pickle files.
+  # UNVERIFIED - copy exactly from the official readme during the audit.
+  raw_codes: null            # TODO
+  # Binary task used for the central experiment.
+  # DESIGN CHOICE: baseline vs protocol stress only. Other states excluded
+  # initially; any later inclusion needs a pre-declared mapping in docs/decisions.md.
+  positive_condition: stress
+  negative_condition: baseline
+  excluded_conditions: null  # TODO: list explicitly after audit (e.g. transient, amusement, meditation)
+
+participants:
+  # Fill from the audit. Any exclusion must be logged with a reason in
+  # data/manifests/exclusions_wesad.csv.
+  all: null                  # TODO
+  excluded: []
+  exclusion_log: data/manifests/exclusions_wesad.csv
+
+episodes:
+  # How label-observation selection units ("episodes") are defined on WESAD.
+  # This is an OPEN DESIGN QUESTION - see docs/research_protocol.md, Study A.
+  definition: null           # TODO
