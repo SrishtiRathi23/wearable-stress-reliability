@@ -169,6 +169,7 @@ def build(release: VerifiedRelease, participants: list[str], params: dict[str, A
 
 
 def write_outputs(table: pd.DataFrame, infos: list[dict[str, Any]], params: dict[str, Any], cfg: dict[str, Any], release: VerifiedRelease, out_parquet: Path, schema_path: Path, manifest_path: Path, summary_csv: Path) -> dict[str, Any]:
+    git_state = _git_commit()  # captured BEFORE any output is written, so the dirty flag reflects the code, not these outputs
     out_parquet.parent.mkdir(parents=True, exist_ok=True)
     table.to_parquet(out_parquet, engine="pyarrow", index=False)
     param_doc = {k: asdict(v) for k, v in params.items()}
@@ -189,7 +190,7 @@ def write_outputs(table: pd.DataFrame, infos: list[dict[str, Any]], params: dict
         "schema_version": SCHEMA_VERSION,
         "schema_path": str(schema_path.relative_to(ROOT)) if schema_path.is_relative_to(ROOT) else str(schema_path),
         "generated_utc": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-        "git": _git_commit(),
+        "git": git_state,
         "raw_checksum_manifest": {
             "path": str(integrity.manifest_path(release.raw_root, release.manifests_dir)),
             "sha256": integrity.sha256_file(integrity.manifest_path(release.raw_root, release.manifests_dir)),

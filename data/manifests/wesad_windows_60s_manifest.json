@@ -7,9 +7,9 @@
  "n_model_features": 59,
  "schema_version": "1.0.0",
  "schema_path": "data\\manifests\\wesad_feature_schema.json",
- "generated_utc": "2026-09-12T14:24:20+00:00",
+ "generated_utc": "2026-09-12T14:27:53+00:00",
  "git": {
-  "commit": "2edb6dc192a6c160c39316690ce40d8162de7e5e",
+  "commit": "b17cf025210083da90030bedd22288f910c48fad",
   "dirty_tree": true
  },
  "raw_checksum_manifest": {
