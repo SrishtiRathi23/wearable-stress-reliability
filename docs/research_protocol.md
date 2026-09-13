@@ -33,9 +33,12 @@ FACT-level details for WESAD (participants, signals, rates, label codes, alignme
 
 All are HYPOTHESES. Null results are valid outcomes.
 
-- **H-A1 (measurement distortion).** For fixed predictions, targeted observation policies (detector-triggered, duration-preferred) yield apparent balanced accuracy / macro-F1 that differ from the full-reference values by more than random observation at the same budget does.
-- **H-A2 (calibration distortion).** Targeted observation policies distort apparent calibration (Brier score, reliability curve, slope/intercept) more than random observation at the same budget.
-- **H-A3 (ranking distortion).** Under targeted observation, the rank order of candidate models and of abstention policies differs from the full-reference rank order in a non-trivial fraction of participants/budgets.
+- **Study-A hypotheses (as frozen in `study_a_protocol.md` Section 16, D-033/D-034; the wording below replaces the original planning text):**
+  - **H-A1 (BA distortion).** At matched budgets, the common targeted policy produces larger absolute balanced-accuracy distortion than uniform random observation (conditional participant contrast C_BA; primary at 50 %).
+  - **H-A2 (estimability / class coverage).** Targeted observation more often prevents valid two-class BA estimation and/or produces poorer class coverage than matched random observation (participant contrast C_E).
+  - **H-A3 (model selection, dataset-level).** Targeted observation more often displaces the full-reference top learned model and produces greater empirical full-cohort selection regret than matched random observation.
+  - **H-A4 (probabilistic performance).** Targeted observation produces larger distortion in Brier (primary) / log-loss (secondary) estimates than matched random observation. This is probabilistic-performance evidence, NOT calibration distortion.
+  - *Original planning wording (superseded):* H-A1 mentioned detector-triggered/duration-preferred policies and macro-F1; H-A2 was phrased as "calibration distortion (Brier, reliability curve, slope/intercept)" - Brier/log loss are now probabilistic-performance endpoints and calibration slope/intercept/ECE are not confirmatory Study-A endpoints (KI-17); H-A3 referred to abstention-policy ranking, which belongs to Study B.
 - **H-B1 (policy-selection distortion).** Policies selected on targeted-observation development labels have higher regret on the full-reference held-out set than policies selected on random-observation or full development labels.
 - **H-C1 (mitigation).** Reserving a fraction of the labelling budget for random audit reduces measurement error (Study A) and regret (Study B) relative to fully targeted labelling at the same total budget.
 
@@ -93,7 +96,7 @@ Direction of effect is stated for clarity; the analyses are two-sided.
 ## 9. Primary metrics
 
 Classification: balanced accuracy, macro-F1, per-class precision/recall, confusion matrix; AUROC / PR-AUC where appropriate.
-Calibration: Brier score (primary), reliability diagram, calibration slope/intercept where estimable, log loss where appropriate, ECE descriptive only.
+Probabilistic performance: Brier score (primary within H-A4), log loss (secondary); these are NOT calibration metrics on their own (KI-17). Calibration evidence proper (reliability diagram, slope/intercept where estimable, ECE descriptive only) is reserved for Studies B/C and is not a confirmatory Study-A endpoint.
 Selective prediction: accepted error, coverage, risk-coverage curve, per-class and per-participant coverage, number/fraction of participants (or events) with no accepted output. **TODO:** predefined coverage levels for tabular reporting.
 Reporting unit: the participant. Windows are never treated as independent units in inferential statistics.
 
@@ -138,15 +141,17 @@ Reporting unit: the participant. Windows are never treated as independent units 
 
 ## 15. What would falsify or weaken the hypotheses
 
-- H-A1/H-A2: if, across participants and budgets, targeted policies produce metric deviations from full reference that are comparable to (or smaller than) random selection at matched budget, the distortion claim is not supported for this setting.
-- H-A3: if model/policy rank order is preserved under targeted observation in the large majority of participant-budget cells.
+- H-A1: if the participant-level contrasts C_BA at 50 % are centred near zero or negative (targeted distortion comparable to or smaller than random), the distortion claim is not supported; if C_BA is unavailable for most participants, H-A1 is reported as not evaluable, not rescued by another budget or endpoint.
+- H-A2: if the equal-participant mean C_E is near zero or negative.
+- H-A3 (dataset-level): if targeted selection retains the full-reference top model with near-zero full-cohort regret at rates comparable to the random replicates.
+- H-A4: if C_BS is centred near zero or negative.
 - H-B1: if regret under targeted development labels is not larger than under random/full development labels.
 - H-C1: if audit fractions do not reduce measurement error or regret, or if any reduction is fully explained by the random component alone (i.e. the targeted part adds nothing) - in which case the honest conclusion is "use random labelling", not "mix".
 - General: effects present only for one detector definition, one budget, or one model would be reported as fragile.
 
 ## 16. Confirmatory vs exploratory
 
-**Confirmatory (fixed at freeze):** H-A1, H-A2, H-A3, H-B1 on WESAD with the pre-declared model set, window length 60 s, pre-declared detector, budget unit, budget grid, and regret definition.
+**Confirmatory (fixed at freeze):** Study A per `study_a_protocol.md` Section 17 - primary H-A1 C_BA at 50 %, required companion H-A2 C_E at 50 %, supporting H-A3/H-A4 at 50 %, budget-response at 25/75 %, negative control at 100 % - with the frozen model set, 60-s windows, consensus selector, one-window budget unit and regret definitions; H-B1 on WESAD once Study B is designed (T-08).
 
 **Exploratory:** H-C1 estimator variants beyond the pre-declared one; all sensitivity analyses in Section 13; Stress-Predict replication; every Nurse analysis in Study D beyond descriptive reporting on validated events; activity-conditioned analyses; SHAP feature-reliance summaries.
 
@@ -156,6 +161,7 @@ Any analysis added or changed after results are seen is logged as post-hoc in `d
 
 ## Amendments
 
+- **A-5, 2026-09-14, Sections 4, 9, 15, 16.** Pre-execution amendment SA-1 (D-034) to Study A synchronised here: hypotheses restated with the frozen quantities (C_BA, C_E, dataset-level H-A3 with full-cohort and same-evaluable-cohort regret, C_BS), Brier/log loss reclassified as probabilistic-performance (not calibration) endpoints, falsification statements and confirmatory hierarchy updated. No mask or Study-A result existed at the time.
 - **A-4, 2026-09-13, Section 5.** Study A confirmatory protocol frozen in `study_a_protocol.md` (D-033), resolving T-05/T-06/T-07 before any mask exists. Hypotheses H-A1..H-A4 restated there with the exact primary quantities; the earlier `duration_preferred`/`mixed` policies are removed from confirmatory Study A.
 - **A-3, 2026-09-13, Section 5.** Recorded the primary full-reference model-ranking metric and ordering from the approved, frozen Phase-3 artifact (D-032) before any Study-A work.
 - **A-2, 2026-09-12, Sections 10, 11.** Froze the outer/inner evaluation design (D-028, resolves T-04) and the Phase-3 modelling contract (D-029: candidates, 59-feature allowlist, threshold 0.5, training-only imputation/scaling, class-weight rule, complete-frame prediction output, Study-B warning). Accepted EDA recording-context dependence (D-025), SCR missingness (D-026) and BVP/HR provisional status (D-027). Confirmatory analyses not yet run, so none affected.

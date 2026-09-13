@@ -34,8 +34,8 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 - **Severity:** HIGH for Study A
 - **Issue:** If episodes are defined as WESAD protocol blocks, block-level selection is a poor model of annotation: only two relevant blocks per person; budget resolution is extremely coarse (0, 1 or 2 blocks); selection is confounded with condition (choosing a block chooses a class); many partial-observation scenarios are single-class, so most metrics are undefined or degenerate; and it is a poor analogue of realistic annotation budgets. A selection effect could still exist at block level, but it would be uninformative about the question the study asks.
 - **Evidence (audit 2026-09-12, `data/manifests/wesad_audit.json`):** every participant has exactly **one** contiguous baseline run (1140-1198 s, 19 x 60-s windows) and exactly **one** contiguous stress run (615-725 s, 10-12 windows). Block-level selection = choosing among 2 blocks per person, 30 across the dataset. Window-level material under the approved time-only 60-s grid anchored at pkl t=0: 434 label-homogeneous windows (282 baseline, 152 stress) plus 60 boundary-straddling ineligible windows; restarting windows at run boundaries would give 445 but uses label timing and is not the primary frame (see dataset_notes.md).
-- **Plan:** decide T-05 among (a) fixed-length contiguous pseudo-episodes inside each block, (b) detector-proposed episodes, (c) window-level selection with contiguity constraints as a diagnostic. Whatever is chosen, the number of selectable units per participant is small (e.g. 3-min pseudo-episodes give ~6 baseline + ~3-4 stress per person), so budget grids must be coarse and results reported per participant.
-- **Status:** open (design decision pending)
+- **Resolution (D-033):** T-05 is RESOLVED - the Study-A candidate unit is a single complete 60-s time-grid window over ALL complete windows of the participant (no blocks, no pseudo-episodes). Block-level selection is therefore not used; this entry is kept as the reason why. The earlier plan text (pseudo-episodes / detector-proposed episodes / contiguity constraints) is superseded by D-033 + SA-1.
+- **Status:** resolved (design), evidence retained
 
 ### KI-06 Candidate generation and masks could use test labels by accident
 - **Severity:** HIGH (invariant #5)
@@ -46,8 +46,8 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 ### KI-19 WESAD code 0 (transient) is ~45 % of the recording and is not "non-stress"
 - **Severity:** MEDIUM
 - **Issue:** ~40 min per participant carries label 0 ("not defined / transient"), plus ~2.7 min of reading blocks (5/6/7). These periods have no verified affective state. Treating them as baseline/negative would be the WESAD analogue of the Nurse invariant violation.
-- **Plan:** exclude from the binary task (proposed mapping); if ever used (e.g. as an "unlabelled pool" for a Study A variant), label them `unknown`, never negative, and pre-declare the analysis.
-- **Status:** open (mapping approval pending)
+- **Resolution (D-021, D-033/SA-1):** codes 0, 3-7 are ineligible for the binary target (never baseline). In Study A they ARE part of the label-independent candidate frame: a selected transient/amusement/meditation/reading/mixed window consumes one annotation unit, contributes to label-yield statistics, and never contributes to binary metrics (`study_a_protocol.md` Section 3). There is no remaining uncertainty about whether other states enter the observation frame: they do, as candidates, never as labels.
+- **Status:** resolved
 
 ### KI-20 Interpretation caveats on specific WESAD participants
 - **Severity:** LOW-MEDIUM
@@ -80,7 +80,7 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 
 ### KI-25 Study-A targeted policy may leave many participant/budget cells non-estimable (anticipated, not observed)
 - **Severity:** MEDIUM (feasibility of H-A1 at low budgets)
-- **Issue:** The frozen consensus-rank selector picks the windows the models collectively rate as most stress-like. At the 25 % budget (B_p ~ 22-29 windows of ~87-117) it is plausible that few or no baseline windows are selected for some participants, making BA non-estimable under the frozen availability rule. That outcome is itself part of H-A2 and must be reported, not repaired; but it may mean the H-A1 contrast is only evaluable at 50 %/75 % for part of the cohort. This is written BEFORE any mask exists and is a risk statement, not an observation.
+- **Issue:** The frozen consensus-rank selector picks the windows with the highest consensus stress rank (not "most confident": rank aggregation does not preserve calibrated confidence magnitude). At the 25 % budget (B_p ~ 22-29 windows of ~87-117) it is plausible that few or no baseline windows are selected for some participants, making BA non-estimable under the frozen availability rule. That outcome is itself part of H-A2 (C_E) and must be reported, not repaired; it may mean the conditional H-A1 contrast C_BA is unavailable for part of the cohort at the 50 % primary budget, in which case H-A1 is reported as (partly) not evaluable - 25 %/75 % are never promoted to replace it (SA-1). This is written BEFORE any mask exists and is a risk statement, not an observation.
 - **Rule:** budgets, selector and availability rule are not to be changed after masks are inspected (D-033).
 - **Status:** open (anticipated)
 
@@ -101,7 +101,7 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 ### KI-09 Calibration sample size
 - **Severity:** MEDIUM
 - **Issue:** Calibration must be fit on development participants only, leaving few windows and very few participants per calibration fit; isotonic regression will overfit; even Platt scaling will be noisy. Reliability diagrams with few bins will be unstable.
-- **Mitigation:** sigmoid first; isotonic gated; Brier score as primary calibration metric; ECE descriptive only.
+- **Mitigation:** sigmoid first; isotonic gated; Brier score as a primary probabilistic-performance metric (not a calibration metric on its own, KI-17); calibration evidence proper via reliability diagrams and slope/intercept where estimable; ECE descriptive only.
 - **Status:** accepted with mitigation
 
 ## Scientific risk

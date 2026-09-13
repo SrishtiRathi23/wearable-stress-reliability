@@ -260,8 +260,28 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
   - **Negative control:** at 100 % both policies recover the full frame, all 434 eligible labels, exact full-reference BA, zero distortion, full-reference ranking; failure = STOP.
   - **Mask pairing:** one mask table keyed by participant/policy/budget/repetition joined to all families; enforced by structure and tests.
   - **Immutable input:** runner verifies `frozen: true` and the exact SHA-256 through `load_approved_predictions`; fails closed; never regenerates Phase 3 (invariant #21).
-- **Still open:** T-11 participant-level inferential procedure for H-A1..H-A4 (proposed paired sign / Wilcoxon on the 15 participant contrasts; awaiting approval); NA reporting format; whether the exploratory 10 % run happens. Study B/C: T-08, T-09.
+- **Still open at D-033 (resolved by D-034/SA-1 as T-14 - the item was mistakenly numbered T-11, which is the Nurse timestamp item):** the Study-A inferential procedure; NA reporting format; whether the exploratory 10 % run happens. Study B/C: T-08, T-09.
 - **Status:** agreed (frozen; no mask built, no outcome inspected)
+
+### D-034 - Study A pre-execution amendment SA-1 (independent review: APPROVE WITH REQUIRED AMENDMENTS)
+- **Date:** 2026-09-14
+- **Category:** DESIGN CHOICE (pre-registration amendment; no mask existed)
+- **Unchanged (approved core):** full 60-s candidate frame; 25/50/75 % budgets; 100 % control; one-window annotation cost; out-of-target budget accounting; common LR/RF/XGB consensus selector; uniform same-budget random comparator; 500 repetitions; fixed Phase-3 predictions.
+- **Frozen by SA-1 (full text `docs/study_a_protocol.md`):**
+  - Budget hierarchy: 50 % PRIMARY confirmatory; 25/75 % supporting budget-response; 100 % negative control; no promotion of 25/75 % if 50 % is unavailable; no 10 % confirmatory.
+  - Random replicates: dataset-level replicate M_{b,k} = union over the 15 participants of M_{p,b,k}, k = 0..499, same k across participants for H-A3; seed string `study_a_random:{participant_id}:{fraction}:{k}` with canonical fractions "0.25"/"0.50"/"0.75"/"1.00", UTF-8, via `child_seed(42, ...)`.
+  - Selector terminology: "highest consensus stress rank", not "most confident of stress"; scope = offline, self-consistent model-triggered batch acquisition; not online triggering; not label leakage; results conditional on the mechanism; independent selector optional later. Tie key: SHA-256 of UTF-8 `f"{tie_seed}:{participant_id}:{window_id}"`, digest as unsigned big-endian integer, ascending wins.
+  - H-A1: conditional estimand C_BA(p,b) = D_T - mean over estimable random repetitions of D_R, defined only if targeted BA estimable and >= 1 estimable random repetition; unavailable otherwise (no penalty/substitution/redraw).
+  - H-A2: primary C_E(p,b) = mean_k E_R - E_T over all 500 repetitions, defined for all 15; supporting yield/coverage/class-balance quantities kept separate.
+  - H-A3: dataset-level only (no participant NHST); >= 10/15 sufficiency; primary EMPIRICAL FULL-COHORT SELECTION REGRET R_cohort = max_m F_m - F_{m_hat}; required diagnostic SAME-EVALUABLE-COHORT regret R_subset with subset_full_best_model and subset_top_model_changed; random summaries over the 500 dataset-level replicates with stated denominators; unavailable selection -> regret NA.
+  - H-A4: Brier distortion C_BS primary (conditional on >= 1 eligible label), log loss C_LL secondary, no composite; numerical convention: labels {0,1}, natural log, float64, `labels=[0,1]`, clipping at float64 machine epsilon identically for observed and full reference (sklearn 1.9.1 convention), Brier unclipped.
+  - Metric availability table (BA/AUROC/macro-F1/AP need both classes; recalls need their class; Brier/log loss need >= 1 eligible label; zero eligible -> all NA; no library pseudo-values).
+  - Confirmatory hierarchy: H-A1 C_BA at 50 % primary; H-A2 C_E at 50 % required companion; H-A3/H-A4 supporting at 50 %; 25/75 % budget-response; 100 % control; everything else secondary/descriptive.
+  - T-14 inference plan: participant-level contrasts with mean/median/IQR/range/sign counts (numerical zero 1e-12)/n_evaluable/ids; MC SD and MCSE; binomial MCSE for probabilities; no p-value threshold as primary rule; no post-hoc test choice; finite-cohort interpretation.
+  - Mandatory pre-output implementation invariants (14 items) and frozen tolerance (exact for counts/ids/model; 1e-12 for values); canonicalised selected ids.
+  - Claim scope statement recorded before results.
+- **Documentation synchronised:** PROJECT_CONTEXT Study-A summary, research_protocol hypotheses/metrics/falsification/confirmatory sections (amendment A-5), known_issues KI-05/KI-09/KI-19/KI-25, the duplicate T-11 renamed T-14, the "Section 12" cross-reference corrected to Section 18.
+- **Status:** agreed (frozen; no mask, selector code or result exists)
 
 ---
 
@@ -282,4 +302,4 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 | T-11 | Nurse timestamp units / timezone / alignment (Gate 1) | Study D | `configs/nurse.yaml: timestamps` |
 | T-12 | Nurse raw label values and binary mapping | Study D | `configs/nurse.yaml: labels` |
 | T-13 | Coverage levels for tabular selective-prediction reporting | reporting | `configs/base.yaml: abstention` |
-| T-11 | Study-A participant-level inferential procedure for H-A1..H-A4 (proposed: exact paired sign / Wilcoxon signed-rank over the 15 participant contrasts with n_evaluable and effect sizes; no window-level tests) | Study A analysis | `study_a_protocol.md` S20 |
+| T-14 | ~~Study-A inferential/reporting procedure~~ RESOLVED (D-034/SA-1): participant-level contrasts with mean/median/IQR/range/sign counts and n_evaluable for H-A1/H-A2/H-A4; Monte-Carlo SD/MCSE and binomial MCSE for random quantities; dataset-level descriptive/Monte-Carlo summaries for H-A3; no p-value threshold as the primary decision rule; no post-hoc test choice | Study A analysis | `study_a_protocol.md` S20 |

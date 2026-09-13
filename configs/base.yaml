@@ -126,24 +126,36 @@ observation_policies:
   candidate_unit: complete_60s_time_grid_window          # T-05: all complete windows, Phase-2 boundaries, no eligibility prefilter
   budget_unit: annotation_units_one_per_selected_window  # T-06: out-of-target selections still consume budget
   budget_fractions_primary: [0.25, 0.50, 0.75]
+  budget_fraction_confirmatory_primary: 0.50     # SA-1: primary confirmatory budget; 0.25/0.75 = supporting budget-response, never promoted
   budget_fraction_negative_control: 1.00
+  budget_fraction_strings: ["0.25", "0.50", "0.75", "1.00"]   # canonical serialisation used in seed strings
   budget_rule: floor_of_fraction_times_participant_window_count
   policies: [targeted_consensus_rank, random_uniform]
   targeted_selector:                                      # T-07
     families: [logistic, random_forest, xgboost]          # majority excluded
     score: mean_within_participant_percentile_rank_of_prob_positive   # scipy rankdata(method="average")
-    tie_break: sha256_of_tie_seed_participant_id_window_id_ascending
+    tie_break: sha256_of_tie_seed_participant_id_window_id_ascending   # UTF-8 of f"{tie_seed}:{participant_id}:{window_id}", digest as unsigned big-endian int, lower wins
     tie_seed_stream: study_a_selector_tie
+    scope: offline_self_consistent_model_triggered_batch_acquisition   # not online triggering; results conditional on this mechanism
   random_comparator:
     sampling: uniform_without_replacement_over_all_complete_windows
     repetitions: 500
-    seed_stream: "study_a_random:<participant_id>:<fraction>:<repetition>"
+    seed_stream: "study_a_random:<participant_id>:<fraction>:<repetition>"   # fraction = canonical string, repetition = decimal int k in 0..499
+    dataset_level_replicate: union_over_participants_of_same_k
     same_mask_across_all_families: true
   ba_estimability: at_least_one_selected_baseline_and_one_selected_stress
   primary_distortion: mean_abs_delta_BA_over_learned_families
   model_selection_min_evaluable_participants: 10
   model_selection_tie_order: [logistic, random_forest, xgboost]
   full_best_model: xgboost
+  regret_primary: empirical_full_cohort_selection_regret       # R_cohort = max_m F_m - F_{m_hat}; NA when selection not estimable
+  regret_diagnostic: same_evaluable_cohort_regret              # R_subset on S_o with subset_full_best_model
+  confirmatory_hierarchy: [H-A1_C_BA_at_0.50, H-A2_C_E_at_0.50, H-A3_and_H-A4_at_0.50, budget_response_0.25_0.75, negative_control_1.00]
+  probabilistic_metrics:
+    primary: brier                     # unclipped mean((p - y)^2)
+    secondary: log_loss                # natural log, labels=[0, 1], float64
+    log_loss_clip_eps: float64_machine_epsilon   # numpy.finfo(numpy.float64).eps, applied identically to observed and full reference (sklearn 1.9.1 convention)
+  numerical_tolerance: 1.0e-12         # metric/distortion equality in the 100 % control and numerical-zero for contrasts
   # Study C provisional mixtures (NOT frozen; T-09 still open).
   audit_random_fractions: [0.0, 0.1, 0.2, 0.3, 0.5]
 
