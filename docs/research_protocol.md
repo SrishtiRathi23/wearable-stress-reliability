@@ -62,6 +62,8 @@ Direction of effect is stated for clarity; the analyses are two-sided.
 
 **Outcomes (per held-out participant, per policy, per budget).** Balanced accuracy, macro-F1, per-class recall, Brier score, calibration slope/intercept (where estimable), reliability-curve distance, accepted error and coverage under each abstention policy, model rank order.
 
+**Primary full-reference model ranking (fixed before Study A, D-032).** Equal-participant-weight mean balanced accuracy across the 15 LOPO outer participants at threshold 0.5, computed from the frozen Phase-3 artifact. Full-reference ordering: XGBoost, Logistic Regression, Random Forest, Majority (LR and RF essentially tied). Secondary ranking metrics (macro-F1, AUROC, AP, class recalls) stay secondary.
+
 **Primary effect measure.** Difference between metric on visible labels and metric on full reference, summarised across participants (median and interquartile range; participant-level paired comparison vs `random` at the same budget). Windows are not treated as independent samples.
 
 ## 6. Study B - Policy-selection distortion
@@ -152,5 +154,6 @@ Any analysis added or changed after results are seen is logged as post-hoc in `d
 
 ## Amendments
 
+- **A-3, 2026-09-13, Section 5.** Recorded the primary full-reference model-ranking metric and ordering from the approved, frozen Phase-3 artifact (D-032) before any Study-A work.
 - **A-2, 2026-09-12, Sections 10, 11.** Froze the outer/inner evaluation design (D-028, resolves T-04) and the Phase-3 modelling contract (D-029: candidates, 59-feature allowlist, threshold 0.5, training-only imputation/scaling, class-weight rule, complete-frame prediction output, Study-B warning). Accepted EDA recording-context dependence (D-025), SCR missingness (D-026) and BVP/HR provisional status (D-027). Confirmatory analyses not yet run, so none affected.
 - **A-1, 2026-09-12, Sections 5, 10, 11, 13.** Froze the Phase-2 preprocessing contract after the independent Phase-1 review (D-021, D-022, D-023): wrist E4 primary; time-only 60-s grid anchored at pkl t=0; homogeneous-code eligibility; binary reference 1 vs 2 with 0, 3-7 ineligible; all 15 participants kept; participant as inferential unit; HRV off. Reason: audit facts (dataset_notes.md) and review findings. Confirmatory analyses not yet run, so none affected. Still open: T-04 split, T-05 selection unit, T-06 budgets/repetitions/budget charging, T-07 detector, T-08, T-09, T-10.

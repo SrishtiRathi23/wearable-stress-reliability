@@ -46,6 +46,43 @@
   "feature_schema_version",
   "feature_table_sha256"
  ],
- "frozen": false,
- "note": "Set frozen=true after independent Phase-3 approval; Study A must verify sha256 before use and must never regenerate this file after seeing selective-label results."
+ "frozen": true,
+ "note": "FROZEN (approved). See 'freeze'.",
+ "freeze": {
+  "frozen_on": "2026-09-13",
+  "approved_sha256": "34010de95b3779b652fd5c9f7d372e69b3d7d61aac020912fd871d1298022212",
+  "phase3_commit_lineage": [
+   "3ec6a3e (Phase 3 code + artifacts)",
+   "282b8d2 (manifests regenerated at clean commit; artifact SHA unchanged)"
+  ],
+  "independent_review": "APPROVE PHASE 3 - reviewer reran all 1380 fits and reproduced the prediction parquet and result CSVs byte-for-byte",
+  "downstream_rule": "Phase-4 / Study-A code must verify this SHA-256 via wsr.experiments.phase3_artifact.load_approved_predictions before use.",
+  "invariant": "This frozen artifact must not be regenerated or replaced based on Study-A results. A genuine software defect -> log it, create a NEW versioned artifact, never overwrite this one.",
+  "primary_full_reference_ranking": {
+   "metric": "equal-participant-weight mean balanced accuracy across the 15 LOPO outer participants (threshold 0.5)",
+   "ordering": [
+    {
+     "rank": 1,
+     "model_family": "xgboost",
+     "mean_participant_balanced_accuracy": 0.8847917774233562
+    },
+    {
+     "rank": 2,
+     "model_family": "logistic",
+     "mean_participant_balanced_accuracy": 0.8558958001063266
+    },
+    {
+     "rank": 3,
+     "model_family": "random_forest",
+     "mean_participant_balanced_accuracy": 0.8558745348219033
+    },
+    {
+     "rank": 4,
+     "model_family": "majority",
+     "mean_participant_balanced_accuracy": 0.5
+    }
+   ],
+   "note": "logistic and random_forest differ by ~2e-5 on this metric; secondary metrics (macro-F1, AUROC, AP, class recalls) remain secondary and must not replace the primary criterion"
+  }
+ }
 }

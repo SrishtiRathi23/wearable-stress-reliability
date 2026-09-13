@@ -43,11 +43,19 @@ def participant_balanced_accuracy(y_true: np.ndarray, y_pred: np.ndarray, who: s
     return float(balanced_accuracy_score(y, np.asarray(y_pred).astype(int)))
 
 
-def participant_metrics(y_true: np.ndarray, prob_positive: np.ndarray, who: str = "participant", threshold: float = THRESHOLD) -> dict[str, float]:
-    """Full per-participant metric set on eligible windows only."""
+def participant_metrics(y_true: np.ndarray, prob_positive: np.ndarray, who: str = "participant", threshold: float = THRESHOLD, y_pred: np.ndarray | None = None) -> dict[str, float]:
+    """Full per-participant metric set on eligible windows only.
+
+    Hard-label metrics use `y_pred` when given (the STORED hard prediction, which
+    for the majority baseline follows its own tie rule: prevalence exactly 0.5 ->
+    0); otherwise the fixed-threshold rule `prob >= threshold`. Probability
+    metrics (AUROC, AP) always use `prob_positive`.
+    """
     y = _check_binary(y_true, who)
     p = np.asarray(prob_positive, dtype=np.float64)
-    pred = hard_predictions(p, threshold)
+    pred = hard_predictions(p, threshold) if y_pred is None else np.asarray(y_pred).astype(np.int8)
+    if pred.shape != y.shape:
+        raise ValueError(f"{who}: y_pred shape {pred.shape} != y_true shape {y.shape}")
     tn, fp, fn, tp = confusion_matrix(y, pred, labels=[0, 1]).ravel()
     return {
         "n_windows": int(y.size),

@@ -283,3 +283,68 @@ def test_write_outputs_and_manifests(run_ml, synth, tmp_path: Path):
     run = json.loads((tmp_path / "man" / "phase3_run.json").read_text())
     assert run["candidate_grids"]["logistic"][0]["params"] == {"C": 0.1, "class_weight": None} and run["classification_threshold"] == 0.5
     assert run["prediction_artifact"]["sha256"] == __import__("wsr.utils.integrity", fromlist=["sha256_file"]).sha256_file(tmp_path / "res" / "oof_predictions.parquet")
+
+
+# --- Phase-3 closeout: majority exact-0.5 tie rule must drive ALL hard-label metrics --------
+
+
+def test_majority_exact_half_prevalence_metrics_follow_tie_rule():
+    from wsr.evaluation.metrics import participant_metrics
+
+    mb = MajorityBaseline().fit(np.array([0, 1, 0, 1]))  # prevalence exactly 0.5 -> hard 0
+    assert mb.hard_label_ == 0
+    y_true = np.array([0, 0, 1, 1, 1])
+    prob = mb.predict_proba_positive(5)
+    m = participant_metrics(y_true, prob, y_pred=mb.predict(5))
+    assert (m["tn"], m["fp"], m["fn"], m["tp"]) == (2, 0, 3, 0)
+    assert m["baseline_recall"] == 1.0 and m["stress_recall"] == 0.0
+    assert m["balanced_accuracy"] == 0.5
+    assert m["macro_f1"] == pytest.approx((2 * 2 / (2 * 2 + 0 + 3) + 0.0) / 2)  # F1(baseline)=0.571, F1(stress)=0
+    # the naive prob >= 0.5 rule would have predicted all-1 here; the stored prediction must win
+    naive = participant_metrics(y_true, prob)
+    assert naive["tp"] == 3 and naive["stress_recall"] == 1.0 and naive != m
+
+
+def test_compute_metrics_uses_stored_hard_predictions(synth):
+    t, s = synth
+    res = B.run_phase3(t[t.participant_id.isin(["S2", "S3", "S4", "S5", "S6"])], s, ["majority"], 42, 4, "t" * 64, "s" * 64)
+    p = res["predictions"].copy()
+    p["prob_positive"] = 0.5  # force the exact-0.5 edge in the stored probabilities
+    p["pred_threshold_0_5"] = 0  # tie rule -> 0
+    per, _ = B.compute_metrics(p, ["majority"])
+    assert per.stress_recall.eq(0.0).all() and per.baseline_recall.eq(1.0).all() and per.tp.eq(0).all()
+
+
+# --- frozen artifact access ------------------------------------------------------------------
+
+
+def test_frozen_artifact_loader_verifies_hash(tmp_path: Path):
+    from wsr.experiments import phase3_artifact as A
+
+    pq = tmp_path / "res" / "p.parquet"
+    pq.parent.mkdir()
+    pd.DataFrame({"a": [1, 2]}).to_parquet(pq, index=False)
+    from wsr.utils.integrity import sha256_file
+
+    man = tmp_path / "m.json"
+    good = {"frozen": True, "artifact": {"path": "res/p.parquet", "sha256": sha256_file(pq), "n_rows": 2}}
+    man.write_text(json.dumps(good))
+    assert len(A.load_approved_predictions(man, tmp_path)) == 2
+    man.write_text(json.dumps({**good, "frozen": False}))
+    with pytest.raises(A.FrozenArtifactError, match="not marked frozen"):
+        A.load_approved_predictions(man, tmp_path)
+    man.write_text(json.dumps({**good, "artifact": {**good["artifact"], "sha256": "0" * 64}}))
+    with pytest.raises(A.FrozenArtifactError, match="refusing"):
+        A.load_approved_predictions(man, tmp_path)
+
+
+def test_committed_phase3_artifact_is_frozen_and_verifies():
+    from wsr.experiments import phase3_artifact as A
+
+    if not (A.ROOT / "results" / "phase3" / "oof_predictions.parquet").is_file():
+        pytest.skip("Phase-3 artifact not present")
+    m = A.read_frozen_manifest()
+    assert m["artifact"]["sha256"] == "34010de95b3779b652fd5c9f7d372e69b3d7d61aac020912fd871d1298022212"
+    df = A.load_approved_predictions()
+    assert len(df) == 5768 and df.model_family.value_counts().eq(1442).all()
+    assert m["freeze"]["primary_full_reference_ranking"]["ordering"][0]["model_family"] == "xgboost"

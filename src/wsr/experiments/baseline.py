@@ -266,10 +266,9 @@ def compute_metrics(pred: pd.DataFrame, families: list[str]) -> tuple[pd.DataFra
     rows = []
     for fam in families:
         for pid, g in pred[(pred["model_family"] == fam) & pred[ELIG_COL]].groupby(PARTICIPANT_COL, sort=False):
-            m = M.participant_metrics(g[LABEL_COL].to_numpy().astype(int), g["prob_positive"].to_numpy(), who=f"outer {pid}")
-            if fam == "majority":  # majority uses its own predeclared hard rule; identical to >=0.5 unless prevalence == 0.5
-                pred_h = g["pred_threshold_0_5"].to_numpy().astype(int)
-                m["balanced_accuracy"] = M.participant_balanced_accuracy(g[LABEL_COL].to_numpy(), pred_h)
+            # ALL hard-label metrics use the stored hard prediction (for learned models this is prob >= 0.5;
+            # for the majority baseline it is its declared tie rule, prevalence exactly 0.5 -> 0).
+            m = M.participant_metrics(g[LABEL_COL].to_numpy().astype(int), g["prob_positive"].to_numpy(), who=f"outer {pid}", y_pred=g["pred_threshold_0_5"].to_numpy())
             rows.append({"model_family": fam, "participant_id": pid, **m})
     per = pd.DataFrame(rows)
     summ_rows = []

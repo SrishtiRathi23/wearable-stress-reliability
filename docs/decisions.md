@@ -231,6 +231,17 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 - **Not decided by these results:** no model family is dropped; all four remain Study-A material (D-029).
 - **Status:** agreed (record); artifact freeze awaits review
 
+### D-032 - Phase-3 prediction artifact FROZEN; primary full-reference ranking recorded
+- **Date:** 2026-09-13
+- **Category:** RESULT RECORD / INVARIANT
+- **Independent review:** APPROVE PHASE 3. The reviewer reran all 1380 fits and reproduced the prediction parquet and result CSVs byte-for-byte.
+- **Frozen artifact:** `results/phase3/oof_predictions.parquet`, SHA-256 `34010de95b3779b652fd5c9f7d372e69b3d7d61aac020912fd871d1298022212`, 5768 rows (1442 per family; 434 eligible + 1008 ineligible per family), commit lineage 3ec6a3e -> 282b8d2. `data/manifests/phase3_predictions_manifest.json` now carries `frozen: true`. Downstream code obtains the predictions only via `wsr.experiments.phase3_artifact.load_approved_predictions`, which verifies the hash first.
+- **Invariant #21:** the frozen artifact must not be regenerated or replaced based on Study-A results. A genuine software defect -> log it, create a NEW versioned artifact with its own manifest, never overwrite this one.
+- **Primary full-reference model-ranking metric for Study A (fixed now, before Study A):** equal-participant-weight mean balanced accuracy across the 15 LOPO outer participants. Ordering from the approved results: 1. XGBoost 0.8848; 2. Logistic Regression 0.8559; 3. Random Forest 0.8559; 4. Majority 0.5000. Logistic and RF are separated by ~2e-5 - essentially tied on this metric. The primary criterion is not to be changed later because another metric yields a more interesting reversal. Secondary metrics (macro-F1, AUROC, average precision, class recalls) stay secondary. No significance claims are made.
+- **Approved interpretation:** XGBoost has the highest mean participant balanced accuracy; no learned family clearly dominates across participants and metrics; Logistic Regression has the highest mean AUROC/AP; participant heterogeneity is substantial (per-participant BA 0.50-1.00); these results concern baseline versus protocol stress under this offline WESAD design and do not establish psychological-stress specificity or clinical generalisation. No model family is removed; all four prediction streams are Study-A inputs.
+- **Closeout fix (no result change):** hard-label metrics now always use the stored hard prediction (`pred_threshold_0_5`), so the majority baseline's declared tie rule (prevalence exactly 0.5 -> 0) governs every hard-label metric. The edge did not occur in the WESAD folds (prevalences 0.349-0.352); metrics recomputed from the frozen parquet with the fixed code are identical to the committed CSVs.
+- **Status:** agreed (frozen)
+
 ---
 
 ## Open decisions (TODO before the affected stage)

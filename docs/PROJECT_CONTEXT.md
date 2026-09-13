@@ -172,7 +172,8 @@ Details, hypotheses and open TODOs live in `docs/research_protocol.md`. Summary:
 17. NEVER manipulate the analysis because the expected effect did not appear.
 18. NULL RESULTS ARE VALID.
 19. NEVER let candidate construction or window boundaries for the primary Study-A frame depend on held-out reference labels (D-023).
-20. NEVER fit imputation/scaling outside a training partition, never tune the Phase-3 threshold (fixed 0.5), and always save predictions for the COMPLETE held-out frame, not only eligible windows (D-029). Model inputs come only from the schema's `model_feature` allowlist. Selectors may use only explicitly permitted time/signal/model-derived inputs; `raw_label`, `binary_analysis_label`, `eligibility` and protocol-state boundaries are never selector inputs.
+20. NEVER fit imputation/scaling outside a training partition, never tune the Phase-3 threshold (fixed 0.5), and always save predictions for the COMPLETE held-out frame, not only eligible windows (D-029). Model inputs come only from the schema's `model_feature` allowlist.
+21. NEVER regenerate or replace the frozen, independently approved Phase-3 prediction artifact (SHA-256 `34010de9...2212`, D-032) on the basis of Study-A results. Downstream code loads it only through `wsr.experiments.phase3_artifact.load_approved_predictions`, which verifies the hash. A genuine defect produces a NEW versioned artifact plus a decision entry. Selectors may use only explicitly permitted time/signal/model-derived inputs; `raw_label`, `binary_analysis_label`, `eligibility` and protocol-state boundaries are never selector inputs.
 
 Where an invariant is mechanically checkable, a test under `tests/` enforces it (see `tests/` for which are implemented and which are still explicit skips).
 
