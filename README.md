@@ -41,7 +41,7 @@ The full protocol, hypotheses, and open decisions are in [`docs/research_protoco
 
 ## Current status
 
-**Phase 2 complete (verified loading, time-only windowing, quality flags, feature table).** `python -m wsr.features.build_features` regenerates `data/processed/wesad_windows_60s.parquet` (1442 windows x 117 columns, 59 model features; schema and processing manifest under `data/manifests/`). No model has been trained and no predictive number exists. Phase-3 contract frozen (D-028/D-029: LOPO outer, 4-fold StratifiedGroupKFold inner, 59-feature allowlist, threshold 0.5, training-only preprocessing, complete-frame predictions). Next step (pending approval): Phase 3 baseline pipelines.
+**Phase 2 complete (verified loading, time-only windowing, quality flags, feature table).** `python -m wsr.features.build_features` regenerates `data/processed/wesad_windows_60s.parquet` (1442 windows x 117 columns, 59 model features; schema and processing manifest under `data/manifests/`). No model has been trained and no predictive number exists. **Phase 3 run (D-031):** `python -m wsr.experiments.baseline` produced LOPO out-of-participant predictions for all 1442 windows x 4 families (`results/phase3/oof_predictions.parquet`, hash in `data/manifests/phase3_run.json`) and participant-level baseline metrics (`results/phase3/model_summary.csv`). Artifact freeze awaits independent review; Study A not started.
 
 ## Setup
 

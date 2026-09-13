@@ -2,7 +2,7 @@
 
 **Purpose of this file.** This is the durable statement of what the project is, why it exists, and what constraints govern it. It exists so that any engineer or coding agent can understand the project from the repository alone, without chat history. It is the authoritative specification unless `docs/decisions.md` records a later change.
 
-Last updated: 2026-09-12 (Phase-1 closeout: WESAD audited; Phase-2 preprocessing contract frozen in D-021/D-022/D-023).
+Last updated: 2026-09-13 (Phase 3 baselines run under D-028/D-029; artifact recorded in D-031, freeze pending review).
 
 ---
 

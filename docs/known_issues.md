@@ -72,6 +72,12 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 - **Plan:** design in the Study-B prompt (T-08); do not reuse Phase-3 outer predictions as development data.
 - **Status:** open
 
+### KI-24 Participant-level probability offsets under the fixed 0.5 threshold (Phase-3 observation)
+- **Severity:** MEDIUM (interpretation; no action taken)
+- **Issue:** In the Phase-3 LOPO results two participants show near-perfect ranking but poor thresholded decisions: S7 (AUROC 0.99-1.00 for all learned models, but baseline recall 0.16-0.37 - most baseline windows get p >= 0.5) and S14 (RF/XGB assign stress windows median p = 0.12 / 0.03 - all predicted baseline, balanced accuracy exactly 0.5 - while LR reaches 0.75 with AUROC 0.93). These are participant-specific probability shifts, not ranking failures. They are precisely the phenomenon Studies B/C (calibration, abstention, policy selection) will examine, and they mean threshold-dependent metrics on this dataset are sensitive to a few participants.
+- **Rule:** the threshold, features, participants and grids are NOT changed in response (D-029, Phase-3 spec section 19). Recorded for interpretation and for the Study-B design.
+- **Status:** open (observation)
+
 ## Modelling
 
 ### KI-07 Activity confounding

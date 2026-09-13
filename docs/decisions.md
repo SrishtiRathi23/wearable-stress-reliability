@@ -221,6 +221,16 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 - **Canonical table impact:** rebuilt; every value in every shared column is identical to the 1.0.0 table and the renamed flag column is value-identical; zero constant-flagged windows before and after. The table SHA-256 changed ONLY because of the column rename: `f786c304...` -> `ebc0ccbde2062a77...`.
 - **Status:** agreed
 
+### D-031 - Phase 3 executed; prediction artifact recorded (freeze pending independent review)
+- **Date:** 2026-09-13
+- **Category:** ENGINEERING / RESULT RECORD
+- **What ran:** `python -m wsr.experiments.baseline` exactly as frozen in D-028/D-029: LOPO outer (15), inner 4-fold StratifiedGroupKFold, predeclared grids (LR 6, RF 8, XGB 8), participant-level equal-weight balanced-accuracy selection, threshold 0.5, training-only median imputation (+ scaling for LR), complete-frame predictions. 1380 model fits ({'majority': 15, 'logistic': 375, 'random_forest': 495, 'xgboost': 495}). No all-missing-feature events, no fit warnings.
+- **Artifact:** `results/phase3/oof_predictions.parquet`, 5768 rows (1442 per family x 4), SHA-256 `34010de95b3779b652fd5c9f7d372e69b3d7d61aac020912fd871d1298022212`; manifests `data/manifests/phase3_splits.json`, `phase3_run.json`, `phase3_predictions_manifest.json` (`frozen: false` until independent approval; Study A must verify the hash before use and must never regenerate the file after seeing selective-label results).
+- **Reproducibility:** a second full run in the same environment produced a byte-identical parquet, identical CSVs and identical split manifests.
+- **Implementation note:** sklearn 1.9.1 deprecates the explicit `penalty="l2"` kwarg; L2 is the default and is used (liblinear), recorded in `phase3_run.json: fixed_params.logistic.penalty`. xgboost 3.4.1 added to dependencies and lock file.
+- **Not decided by these results:** no model family is dropped; all four remain Study-A material (D-029).
+- **Status:** agreed (record); artifact freeze awaits review
+
 ---
 
 ## Open decisions (TODO before the affected stage)

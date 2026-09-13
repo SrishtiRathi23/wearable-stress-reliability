@@ -1,0 +1,51 @@
+{
+ "generated_utc": "2026-09-13T11:03:14+00:00",
+ "git": {
+  "commit": "4d01e70381fa7df3d5f68c195b5767b366dda53d",
+  "dirty_tree": true
+ },
+ "feature_table_sha256": "ebc0ccbde2062a7727dcd7f2d5f3ad3588dfe32639368e4fc08ec39bdb084a32",
+ "feature_schema_sha256": "53e77de03f1e21bd2441dbb0d7a5cbb897a85924abedc0d45b48e4b7d8e6e5bf",
+ "feature_schema_version": "1.1.0",
+ "versions": {
+  "python": "3.12.13",
+  "numpy": "2.5.3",
+  "pandas": "3.0.5",
+  "scikit_learn": "1.9.1",
+  "xgboost": "3.4.1"
+ },
+ "artifact": {
+  "path": "results\\phase3\\oof_predictions.parquet",
+  "sha256": "34010de95b3779b652fd5c9f7d372e69b3d7d61aac020912fd871d1298022212",
+  "n_rows": 5768,
+  "rows_per_family": {
+   "majority": 1442,
+   "logistic": 1442,
+   "random_forest": 1442,
+   "xgboost": 1442
+  }
+ },
+ "columns": [
+  "dataset",
+  "participant_id",
+  "window_id",
+  "window_index",
+  "outer_fold",
+  "model_family",
+  "binary_eligible",
+  "analysis_label",
+  "raw_label_codes_present",
+  "is_label_homogeneous",
+  "homogeneous_raw_label",
+  "condition_name",
+  "prob_positive",
+  "pred_threshold_0_5",
+  "candidate_id",
+  "candidate_params",
+  "model_seed",
+  "feature_schema_version",
+  "feature_table_sha256"
+ ],
+ "frozen": false,
+ "note": "Set frozen=true after independent Phase-3 approval; Study A must verify sha256 before use and must never regenerate this file after seeing selective-label results."
+}

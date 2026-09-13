@@ -100,11 +100,10 @@ phase3:
 
 
 models:
+  # Phase-3 candidate families. Grids are FROZEN CODE CONSTANTS in
+  # src/wsr/models/grids.py (LR 6, RF 8, XGB 8) and cannot be changed here.
   candidates: [majority, logistic, random_forest, xgboost]
-  # Hyperparameter grids are deliberately small; tuned on inner grouped splits only.
-  logistic: {}
-  random_forest: {}
-  xgboost: {}
+  grids_source: src/wsr/models/grids.py
 
 calibration:
   method: sigmoid          # Platt-type first; isotonic only with enough independent dev data

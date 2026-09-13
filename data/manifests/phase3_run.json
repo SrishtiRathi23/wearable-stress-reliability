@@ -1,0 +1,1170 @@
+{
+ "generated_utc": "2026-09-13T11:03:14+00:00",
+ "git": {
+  "commit": "4d01e70381fa7df3d5f68c195b5767b366dda53d",
+  "dirty_tree": true
+ },
+ "feature_table_sha256": "ebc0ccbde2062a7727dcd7f2d5f3ad3588dfe32639368e4fc08ec39bdb084a32",
+ "feature_schema_sha256": "53e77de03f1e21bd2441dbb0d7a5cbb897a85924abedc0d45b48e4b7d8e6e5bf",
+ "feature_schema_version": "1.1.0",
+ "versions": {
+  "python": "3.12.13",
+  "numpy": "2.5.3",
+  "pandas": "3.0.5",
+  "scikit_learn": "1.9.1",
+  "xgboost": "3.4.1"
+ },
+ "families": [
+  "majority",
+  "logistic",
+  "random_forest",
+  "xgboost"
+ ],
+ "global_seed": 42,
+ "seed_streams": {
+  "inner_split": "inner_split:<outer_pid>",
+  "model_fit": "model_fit:<family>:<outer_pid>"
+ },
+ "candidate_grids": {
+  "logistic": [
+   {
+    "order": 0,
+    "candidate_id": "logistic:C=0.1,class_weight=None",
+    "params": {
+     "C": 0.1,
+     "class_weight": null
+    }
+   },
+   {
+    "order": 1,
+    "candidate_id": "logistic:C=0.1,class_weight=balanced",
+    "params": {
+     "C": 0.1,
+     "class_weight": "balanced"
+    }
+   },
+   {
+    "order": 2,
+    "candidate_id": "logistic:C=1.0,class_weight=None",
+    "params": {
+     "C": 1.0,
+     "class_weight": null
+    }
+   },
+   {
+    "order": 3,
+    "candidate_id": "logistic:C=1.0,class_weight=balanced",
+    "params": {
+     "C": 1.0,
+     "class_weight": "balanced"
+    }
+   },
+   {
+    "order": 4,
+    "candidate_id": "logistic:C=10.0,class_weight=None",
+    "params": {
+     "C": 10.0,
+     "class_weight": null
+    }
+   },
+   {
+    "order": 5,
+    "candidate_id": "logistic:C=10.0,class_weight=balanced",
+    "params": {
+     "C": 10.0,
+     "class_weight": "balanced"
+    }
+   }
+  ],
+  "random_forest": [
+   {
+    "order": 0,
+    "candidate_id": "random_forest:max_depth=3,min_samples_leaf=5,class_weight=None",
+    "params": {
+     "max_depth": 3,
+     "min_samples_leaf": 5,
+     "class_weight": null
+    }
+   },
+   {
+    "order": 1,
+    "candidate_id": "random_forest:max_depth=3,min_samples_leaf=5,class_weight=balanced",
+    "params": {
+     "max_depth": 3,
+     "min_samples_leaf": 5,
+     "class_weight": "balanced"
+    }
+   },
+   {
+    "order": 2,
+    "candidate_id": "random_forest:max_depth=3,min_samples_leaf=2,class_weight=None",
+    "params": {
+     "max_depth": 3,
+     "min_samples_leaf": 2,
+     "class_weight": null
+    }
+   },
+   {
+    "order": 3,
+    "candidate_id": "random_forest:max_depth=3,min_samples_leaf=2,class_weight=balanced",
+    "params": {
+     "max_depth": 3,
+     "min_samples_leaf": 2,
+     "class_weight": "balanced"
+    }
+   },
+   {
+    "order": 4,
+    "candidate_id": "random_forest:max_depth=6,min_samples_leaf=5,class_weight=None",
+    "params": {
+     "max_depth": 6,
+     "min_samples_leaf": 5,
+     "class_weight": null
+    }
+   },
+   {
+    "order": 5,
+    "candidate_id": "random_forest:max_depth=6,min_samples_leaf=5,class_weight=balanced",
+    "params": {
+     "max_depth": 6,
+     "min_samples_leaf": 5,
+     "class_weight": "balanced"
+    }
+   },
+   {
+    "order": 6,
+    "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=None",
+    "params": {
+     "max_depth": 6,
+     "min_samples_leaf": 2,
+     "class_weight": null
+    }
+   },
+   {
+    "order": 7,
+    "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+    "params": {
+     "max_depth": 6,
+     "min_samples_leaf": 2,
+     "class_weight": "balanced"
+    }
+   }
+  ],
+  "xgboost": [
+   {
+    "order": 0,
+    "candidate_id": "xgboost:max_depth=2,learning_rate=0.03,class_weight_mode=none",
+    "params": {
+     "max_depth": 2,
+     "learning_rate": 0.03,
+     "class_weight_mode": "none"
+    }
+   },
+   {
+    "order": 1,
+    "candidate_id": "xgboost:max_depth=2,learning_rate=0.03,class_weight_mode=training_ratio",
+    "params": {
+     "max_depth": 2,
+     "learning_rate": 0.03,
+     "class_weight_mode": "training_ratio"
+    }
+   },
+   {
+    "order": 2,
+    "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=none",
+    "params": {
+     "max_depth": 2,
+     "learning_rate": 0.1,
+     "class_weight_mode": "none"
+    }
+   },
+   {
+    "order": 3,
+    "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=training_ratio",
+    "params": {
+     "max_depth": 2,
+     "learning_rate": 0.1,
+     "class_weight_mode": "training_ratio"
+    }
+   },
+   {
+    "order": 4,
+    "candidate_id": "xgboost:max_depth=3,learning_rate=0.03,class_weight_mode=none",
+    "params": {
+     "max_depth": 3,
+     "learning_rate": 0.03,
+     "class_weight_mode": "none"
+    }
+   },
+   {
+    "order": 5,
+    "candidate_id": "xgboost:max_depth=3,learning_rate=0.03,class_weight_mode=training_ratio",
+    "params": {
+     "max_depth": 3,
+     "learning_rate": 0.03,
+     "class_weight_mode": "training_ratio"
+    }
+   },
+   {
+    "order": 6,
+    "candidate_id": "xgboost:max_depth=3,learning_rate=0.1,class_weight_mode=none",
+    "params": {
+     "max_depth": 3,
+     "learning_rate": 0.1,
+     "class_weight_mode": "none"
+    }
+   },
+   {
+    "order": 7,
+    "candidate_id": "xgboost:max_depth=3,learning_rate=0.1,class_weight_mode=training_ratio",
+    "params": {
+     "max_depth": 3,
+     "learning_rate": 0.1,
+     "class_weight_mode": "training_ratio"
+    }
+   }
+  ]
+ },
+ "fixed_params": {
+  "logistic": {
+   "solver": "liblinear",
+   "max_iter": 5000,
+   "penalty": "l2 (sklearn default; explicit penalty kwarg deprecated in sklearn 1.8, so not passed)"
+  },
+  "random_forest": {
+   "n_estimators": 300,
+   "max_features": "sqrt",
+   "criterion": "gini",
+   "bootstrap": true,
+   "n_jobs": 1
+  },
+  "xgboost": {
+   "objective": "binary:logistic",
+   "eval_metric": "logloss",
+   "n_estimators": 200,
+   "subsample": 0.8,
+   "colsample_bytree": 0.8,
+   "min_child_weight": 1,
+   "gamma": 0,
+   "reg_alpha": 0,
+   "reg_lambda": 1,
+   "tree_method": "hist",
+   "n_jobs": 1
+  }
+ },
+ "tie_breaking": "highest participant-mean inner balanced accuracy; ties within 1e-12 -> earlier candidate in predeclared order",
+ "preprocessing": {
+  "imputation": "median from the current training partition (TrainingMedianImputer); all-missing feature -> constant 0.0 and logged",
+  "scaling": "StandardScaler fitted on the training partition, logistic only",
+  "fit_scope": "inner-training rows for candidate evaluation; all 14 outer-training participants for refit"
+ },
+ "classification_threshold": 0.5,
+ "majority_rule": "prob = training prevalence; hard = 1 if prevalence > 0.5 else 0 (0.5 -> 0)",
+ "inner_score": "equal-weight mean of participant-level balanced accuracy over the 14 inner-validation participants",
+ "metric_definitions": {
+  "primary": "balanced_accuracy per outer participant on binary_eligible windows at threshold 0.5",
+  "secondary": [
+   "macro_f1",
+   "baseline_recall",
+   "stress_recall",
+   "tn/fp/fn/tp",
+   "auroc",
+   "average_precision (not calibration evidence)"
+  ],
+  "aggregation": "equal weight per participant; sd is across participants, never a window-level SE"
+ },
+ "fit_counts": {
+  "majority": 15,
+  "logistic": 375,
+  "random_forest": 495,
+  "xgboost": 495
+ },
+ "n_fits_total": 1380,
+ "selected": [
+  {
+   "outer_fold": 0,
+   "outer_test_participant": "S2",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 406, \"training_prevalence\": 0.3497536945812808}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 0,
+   "outer_test_participant": "S2",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=None",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": null}",
+   "model_seed": 1718432981.0,
+   "inner_score": 0.8718747626642365,
+   "candidate_order": 0.0,
+   "model_seed_stream": "model_fit:logistic:S2",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3497536945812808,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 0,
+   "outer_test_participant": "S2",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=3,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 3, \"min_samples_leaf\": 2}",
+   "model_seed": 17722509.0,
+   "inner_score": 0.8633610541505278,
+   "candidate_order": 3.0,
+   "model_seed_stream": "model_fit:random_forest:S2",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3497536945812808,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 0,
+   "outer_test_participant": "S2",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=3,learning_rate=0.1,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.1, \"max_depth\": 3, \"scale_pos_weight\": 1.8591549295774648}",
+   "model_seed": 3417012603.0,
+   "inner_score": 0.8745139363560417,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:xgboost:S2",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3497536945812808,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 1,
+   "outer_test_participant": "S3",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 406, \"training_prevalence\": 0.3497536945812808}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 1,
+   "outer_test_participant": "S3",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=None",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": null}",
+   "model_seed": 584898430.0,
+   "inner_score": 0.8554207488418015,
+   "candidate_order": 0.0,
+   "model_seed_stream": "model_fit:logistic:S3",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3497536945812808,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 1,
+   "outer_test_participant": "S3",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=3,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 3, \"min_samples_leaf\": 2}",
+   "model_seed": 2560600566.0,
+   "inner_score": 0.8541941976152503,
+   "candidate_order": 3.0,
+   "model_seed_stream": "model_fit:random_forest:S3",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3497536945812808,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 1,
+   "outer_test_participant": "S3",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=3,learning_rate=0.03,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.03, \"max_depth\": 3, \"scale_pos_weight\": 1.8591549295774648}",
+   "model_seed": 1485804657.0,
+   "inner_score": 0.8538733196627933,
+   "candidate_order": 5.0,
+   "model_seed_stream": "model_fit:xgboost:S3",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3497536945812808,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 2,
+   "outer_test_participant": "S4",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 406, \"training_prevalence\": 0.3522167487684729}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 2,
+   "outer_test_participant": "S4",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=balanced",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": \"balanced\"}",
+   "model_seed": 4210449015.0,
+   "inner_score": 0.8098294979873927,
+   "candidate_order": 1.0,
+   "model_seed_stream": "model_fit:logistic:S4",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3522167487684729,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 2,
+   "outer_test_participant": "S4",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 3030191156.0,
+   "inner_score": 0.8626300599984811,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:random_forest:S4",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3522167487684729,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 2,
+   "outer_test_participant": "S4",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=3,learning_rate=0.1,class_weight_mode=none",
+   "candidate_params": "{\"class_weight_mode\": \"none\", \"learning_rate\": 0.1, \"max_depth\": 3, \"scale_pos_weight\": 1.0}",
+   "model_seed": 3346531493.0,
+   "inner_score": 0.8674565200880989,
+   "candidate_order": 6.0,
+   "model_seed_stream": "model_fit:xgboost:S4",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3522167487684729,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 3,
+   "outer_test_participant": "S5",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 406, \"training_prevalence\": 0.3522167487684729}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 3,
+   "outer_test_participant": "S5",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=None",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": null}",
+   "model_seed": 3987203998.0,
+   "inner_score": 0.8819947596263387,
+   "candidate_order": 0.0,
+   "model_seed_stream": "model_fit:logistic:S5",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3522167487684729,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 3,
+   "outer_test_participant": "S5",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 3592787348.0,
+   "inner_score": 0.8950444292549556,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:random_forest:S5",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3522167487684729,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 3,
+   "outer_test_participant": "S5",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.1, \"max_depth\": 2, \"scale_pos_weight\": 1.8391608391608392}",
+   "model_seed": 1329148239.0,
+   "inner_score": 0.9017828662565505,
+   "candidate_order": 3.0,
+   "model_seed_stream": "model_fit:xgboost:S5",
+   "n_training_rows": 406.0,
+   "training_prevalence": 0.3522167487684729,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 4,
+   "outer_test_participant": "S6",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 405, \"training_prevalence\": 0.3506172839506173}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 4,
+   "outer_test_participant": "S6",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=None",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": null}",
+   "model_seed": 1535795075.0,
+   "inner_score": 0.8626756284651022,
+   "candidate_order": 0.0,
+   "model_seed_stream": "model_fit:logistic:S6",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 4,
+   "outer_test_participant": "S6",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 280136610.0,
+   "inner_score": 0.8498462064251538,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:random_forest:S6",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 4,
+   "outer_test_participant": "S6",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=3,learning_rate=0.1,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.1, \"max_depth\": 3, \"scale_pos_weight\": 1.852112676056338}",
+   "model_seed": 1179817230.0,
+   "inner_score": 0.8565428723323459,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:xgboost:S6",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 5,
+   "outer_test_participant": "S7",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 405, \"training_prevalence\": 0.3506172839506173}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 5,
+   "outer_test_participant": "S7",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=None",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": null}",
+   "model_seed": 356452045.0,
+   "inner_score": 0.8604541657173236,
+   "candidate_order": 0.0,
+   "model_seed_stream": "model_fit:logistic:S7",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 5,
+   "outer_test_participant": "S7",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=None",
+   "candidate_params": "{\"class_weight\": null, \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 1801225816.0,
+   "inner_score": 0.8482304245462141,
+   "candidate_order": 6.0,
+   "model_seed_stream": "model_fit:random_forest:S7",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 5,
+   "outer_test_participant": "S7",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.1, \"max_depth\": 2, \"scale_pos_weight\": 1.852112676056338}",
+   "model_seed": 4195422616.0,
+   "inner_score": 0.916286929444824,
+   "candidate_order": 3.0,
+   "model_seed_stream": "model_fit:xgboost:S7",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 6,
+   "outer_test_participant": "S8",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 404, \"training_prevalence\": 0.349009900990099}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 6,
+   "outer_test_participant": "S8",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=None",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": null}",
+   "model_seed": 1689955971.0,
+   "inner_score": 0.8709557985873776,
+   "candidate_order": 0.0,
+   "model_seed_stream": "model_fit:logistic:S8",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 6,
+   "outer_test_participant": "S8",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 743915531.0,
+   "inner_score": 0.840776182881446,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:random_forest:S8",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 6,
+   "outer_test_participant": "S8",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.1, \"max_depth\": 2, \"scale_pos_weight\": 1.8652482269503545}",
+   "model_seed": 1819664754.0,
+   "inner_score": 0.8646008961798436,
+   "candidate_order": 3.0,
+   "model_seed_stream": "model_fit:xgboost:S8",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 7,
+   "outer_test_participant": "S9",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 407, \"training_prevalence\": 0.35135135135135137}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 7,
+   "outer_test_participant": "S9",
+   "family": "logistic",
+   "candidate_id": "logistic:C=1.0,class_weight=None",
+   "candidate_params": "{\"C\": 1.0, \"class_weight\": null}",
+   "model_seed": 3989475036.0,
+   "inner_score": 0.8150299992405255,
+   "candidate_order": 2.0,
+   "model_seed_stream": "model_fit:logistic:S9",
+   "n_training_rows": 407.0,
+   "training_prevalence": 0.35135135135135137,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 7,
+   "outer_test_participant": "S9",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 4039612312.0,
+   "inner_score": 0.8561479456216299,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:random_forest:S9",
+   "n_training_rows": 407.0,
+   "training_prevalence": 0.35135135135135137,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 7,
+   "outer_test_participant": "S9",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.1, \"max_depth\": 2, \"scale_pos_weight\": 1.8461538461538463}",
+   "model_seed": 1319522643.0,
+   "inner_score": 0.849455077086656,
+   "candidate_order": 3.0,
+   "model_seed_stream": "model_fit:xgboost:S9",
+   "n_training_rows": 407.0,
+   "training_prevalence": 0.35135135135135137,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 8,
+   "outer_test_participant": "S10",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 404, \"training_prevalence\": 0.349009900990099}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 8,
+   "outer_test_participant": "S10",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=None",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": null}",
+   "model_seed": 1663070888.0,
+   "inner_score": 0.827878408141566,
+   "candidate_order": 0.0,
+   "model_seed_stream": "model_fit:logistic:S10",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 8,
+   "outer_test_participant": "S10",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 3176160570.0,
+   "inner_score": 0.8448146882357408,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:random_forest:S10",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 8,
+   "outer_test_participant": "S10",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=none",
+   "candidate_params": "{\"class_weight_mode\": \"none\", \"learning_rate\": 0.1, \"max_depth\": 2, \"scale_pos_weight\": 1.0}",
+   "model_seed": 358943171.0,
+   "inner_score": 0.8697729171413382,
+   "candidate_order": 2.0,
+   "model_seed_stream": "model_fit:xgboost:S10",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 9,
+   "outer_test_participant": "S11",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 404, \"training_prevalence\": 0.349009900990099}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 9,
+   "outer_test_participant": "S11",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=balanced",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": \"balanced\"}",
+   "model_seed": 1491110684.0,
+   "inner_score": 0.8659033948507633,
+   "candidate_order": 1.0,
+   "model_seed_stream": "model_fit:logistic:S11",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 9,
+   "outer_test_participant": "S11",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 2291792244.0,
+   "inner_score": 0.8014069264069265,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:random_forest:S11",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 9,
+   "outer_test_participant": "S11",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=3,learning_rate=0.1,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.1, \"max_depth\": 3, \"scale_pos_weight\": 1.8652482269503545}",
+   "model_seed": 720958979.0,
+   "inner_score": 0.8528803068276752,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:xgboost:S11",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 10,
+   "outer_test_participant": "S13",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 405, \"training_prevalence\": 0.3506172839506173}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 10,
+   "outer_test_participant": "S13",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=balanced",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": \"balanced\"}",
+   "model_seed": 603744552.0,
+   "inner_score": 0.8676672742462216,
+   "candidate_order": 1.0,
+   "model_seed_stream": "model_fit:logistic:S13",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 10,
+   "outer_test_participant": "S13",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 3878918944.0,
+   "inner_score": 0.8467912204754311,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:random_forest:S13",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 10,
+   "outer_test_participant": "S13",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=none",
+   "candidate_params": "{\"class_weight_mode\": \"none\", \"learning_rate\": 0.1, \"max_depth\": 2, \"scale_pos_weight\": 1.0}",
+   "model_seed": 3620697750.0,
+   "inner_score": 0.854477101845523,
+   "candidate_order": 2.0,
+   "model_seed_stream": "model_fit:xgboost:S13",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 11,
+   "outer_test_participant": "S14",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 405, \"training_prevalence\": 0.3506172839506173}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 11,
+   "outer_test_participant": "S14",
+   "family": "logistic",
+   "candidate_id": "logistic:C=1.0,class_weight=balanced",
+   "candidate_params": "{\"C\": 1.0, \"class_weight\": \"balanced\"}",
+   "model_seed": 4139403392.0,
+   "inner_score": 0.8385091516670463,
+   "candidate_order": 3.0,
+   "model_seed_stream": "model_fit:logistic:S14",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 11,
+   "outer_test_participant": "S14",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=5,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 5}",
+   "model_seed": 3698407731.0,
+   "inner_score": 0.7980937191463509,
+   "candidate_order": 5.0,
+   "model_seed_stream": "model_fit:random_forest:S14",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 11,
+   "outer_test_participant": "S14",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=none",
+   "candidate_params": "{\"class_weight_mode\": \"none\", \"learning_rate\": 0.1, \"max_depth\": 2, \"scale_pos_weight\": 1.0}",
+   "model_seed": 2313631943.0,
+   "inner_score": 0.856470722260196,
+   "candidate_order": 2.0,
+   "model_seed_stream": "model_fit:xgboost:S14",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 12,
+   "outer_test_participant": "S15",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 404, \"training_prevalence\": 0.349009900990099}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 12,
+   "outer_test_participant": "S15",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=balanced",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": \"balanced\"}",
+   "model_seed": 2664414464.0,
+   "inner_score": 0.8576289207868155,
+   "candidate_order": 1.0,
+   "model_seed_stream": "model_fit:logistic:S15",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 12,
+   "outer_test_participant": "S15",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=None",
+   "candidate_params": "{\"class_weight\": null, \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 1483585853.0,
+   "inner_score": 0.8806353003721424,
+   "candidate_order": 6.0,
+   "model_seed_stream": "model_fit:random_forest:S15",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 12,
+   "outer_test_participant": "S15",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=3,learning_rate=0.1,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.1, \"max_depth\": 3, \"scale_pos_weight\": 1.8652482269503545}",
+   "model_seed": 2579709283.0,
+   "inner_score": 0.8997949419002049,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:xgboost:S15",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 13,
+   "outer_test_participant": "S16",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 405, \"training_prevalence\": 0.3506172839506173}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 13,
+   "outer_test_participant": "S16",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=None",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": null}",
+   "model_seed": 450983658.0,
+   "inner_score": 0.8626813245234298,
+   "candidate_order": 0.0,
+   "model_seed_stream": "model_fit:logistic:S16",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 13,
+   "outer_test_participant": "S16",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=None",
+   "candidate_params": "{\"class_weight\": null, \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 3894038675.0,
+   "inner_score": 0.8763005999848105,
+   "candidate_order": 6.0,
+   "model_seed_stream": "model_fit:random_forest:S16",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 13,
+   "outer_test_participant": "S16",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=3,learning_rate=0.1,class_weight_mode=none",
+   "candidate_params": "{\"class_weight_mode\": \"none\", \"learning_rate\": 0.1, \"max_depth\": 3, \"scale_pos_weight\": 1.0}",
+   "model_seed": 1496962331.0,
+   "inner_score": 0.8759968102073366,
+   "candidate_order": 6.0,
+   "model_seed_stream": "model_fit:xgboost:S16",
+   "n_training_rows": 405.0,
+   "training_prevalence": 0.3506172839506173,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 14,
+   "outer_test_participant": "S17",
+   "family": "majority",
+   "candidate_id": "majority",
+   "candidate_params": "{\"hard_label\": 0, \"n_training_rows\": 404, \"training_prevalence\": 0.349009900990099}",
+   "model_seed": NaN,
+   "inner_score": NaN,
+   "candidate_order": NaN,
+   "model_seed_stream": NaN,
+   "n_training_rows": NaN,
+   "training_prevalence": NaN,
+   "all_missing_features_refit": NaN
+  },
+  {
+   "outer_fold": 14,
+   "outer_test_participant": "S17",
+   "family": "logistic",
+   "candidate_id": "logistic:C=0.1,class_weight=balanced",
+   "candidate_params": "{\"C\": 0.1, \"class_weight\": \"balanced\"}",
+   "model_seed": 2415695120.0,
+   "inner_score": 0.8867300827827144,
+   "candidate_order": 1.0,
+   "model_seed_stream": "model_fit:logistic:S17",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 14,
+   "outer_test_participant": "S17",
+   "family": "random_forest",
+   "candidate_id": "random_forest:max_depth=6,min_samples_leaf=2,class_weight=balanced",
+   "candidate_params": "{\"class_weight\": \"balanced\", \"max_depth\": 6, \"min_samples_leaf\": 2}",
+   "model_seed": 3919448548.0,
+   "inner_score": 0.8685064935064934,
+   "candidate_order": 7.0,
+   "model_seed_stream": "model_fit:random_forest:S17",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  },
+  {
+   "outer_fold": 14,
+   "outer_test_participant": "S17",
+   "family": "xgboost",
+   "candidate_id": "xgboost:max_depth=2,learning_rate=0.1,class_weight_mode=training_ratio",
+   "candidate_params": "{\"class_weight_mode\": \"training_ratio\", \"learning_rate\": 0.1, \"max_depth\": 2, \"scale_pos_weight\": 1.8652482269503545}",
+   "model_seed": 572173500.0,
+   "inner_score": 0.8776448697501328,
+   "candidate_order": 3.0,
+   "model_seed_stream": "model_fit:xgboost:S17",
+   "n_training_rows": 404.0,
+   "training_prevalence": 0.349009900990099,
+   "all_missing_features_refit": "[]"
+  }
+ ],
+ "all_missing_feature_events": [],
+ "fit_warnings": [],
+ "prediction_artifact": {
+  "path": "results\\phase3\\oof_predictions.parquet",
+  "sha256": "34010de95b3779b652fd5c9f7d372e69b3d7d61aac020912fd871d1298022212",
+  "n_rows": 5768,
+  "rows_per_family": {
+   "majority": 1442,
+   "logistic": 1442,
+   "random_forest": 1442,
+   "xgboost": 1442
+  }
+ },
+ "config_snapshot": {
+  "evaluation": {
+   "outer_split": "leave-one-participant-out",
+   "inner_split": "stratified-group-kfold",
+   "inner_folds": 4,
+   "inner_seed_stream": "inner_split",
+   "inner_folds_shared_across_candidates": true,
+   "inner_score": "participant_level_balanced_accuracy_equal_weight",
+   "allow_random_row_split_diagnostic": true
+  },
+  "phase3": {
+   "purpose": "comparative_baselines_retained_for_study_a",
+   "candidates": [
+    "majority",
+    "logistic",
+    "random_forest",
+    "xgboost"
+   ],
+   "model_inputs": "schema_model_feature_columns",
+   "supervised_rows": "binary_eligible_only",
+   "classification_threshold": 0.5,
+   "save_positive_class_probability": true,
+   "majority_baseline": "constant_training_majority_label_with_training_prevalence_probability",
+   "imputation": "median_from_training_partition",
+   "all_missing_feature_rule": "impute_constant_zero_and_log",
+   "scaling": "standard_from_training_partition_for_logistic_only",
+   "class_weight": "predeclared_in_small_grid_from_training_data_only",
+   "prediction_output": "all_complete_windows_of_held_out_participant",
+   "hyperparameter_search": "small_predeclared_grid_only"
+  },
+  "seed": 42
+ }
+}

@@ -1,0 +1,1961 @@
+{
+ "generated_utc": "2026-09-13T11:03:14+00:00",
+ "git": {
+  "commit": "4d01e70381fa7df3d5f68c195b5767b366dda53d",
+  "dirty_tree": true
+ },
+ "feature_table_sha256": "ebc0ccbde2062a7727dcd7f2d5f3ad3588dfe32639368e4fc08ec39bdb084a32",
+ "feature_schema_sha256": "53e77de03f1e21bd2441dbb0d7a5cbb897a85924abedc0d45b48e4b7d8e6e5bf",
+ "feature_schema_version": "1.1.0",
+ "versions": {
+  "python": "3.12.13",
+  "numpy": "2.5.3",
+  "pandas": "3.0.5",
+  "scikit_learn": "1.9.1",
+  "xgboost": "3.4.1"
+ },
+ "global_seed": 42,
+ "outer_split": "leave-one-participant-out",
+ "inner_split": "StratifiedGroupKFold(n_splits=4, shuffle=True, random_state=child_seed(seed, 'inner_split:<outer_pid>'))",
+ "participants": [
+  "S2",
+  "S3",
+  "S4",
+  "S5",
+  "S6",
+  "S7",
+  "S8",
+  "S9",
+  "S10",
+  "S11",
+  "S13",
+  "S14",
+  "S15",
+  "S16",
+  "S17"
+ ],
+ "outer_folds": [
+  {
+   "fold_index": 0,
+   "test_participant": "S2",
+   "train_participants": [
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 1,
+   "test_participant": "S3",
+   "train_participants": [
+    "S2",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 2,
+   "test_participant": "S4",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 3,
+   "test_participant": "S5",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 4,
+   "test_participant": "S6",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 5,
+   "test_participant": "S7",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 6,
+   "test_participant": "S8",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 7,
+   "test_participant": "S9",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 8,
+   "test_participant": "S10",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 9,
+   "test_participant": "S11",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 10,
+   "test_participant": "S13",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 11,
+   "test_participant": "S14",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S15",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 12,
+   "test_participant": "S15",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S16",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 13,
+   "test_participant": "S16",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S17"
+   ]
+  },
+  {
+   "fold_index": 14,
+   "test_participant": "S17",
+   "train_participants": [
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16"
+   ]
+  }
+ ],
+ "inner_splits": [
+  {
+   "outer_test_participant": "S2",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 3511304750,
+   "seed_stream": "inner_split:S2",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S14",
+      "S16",
+      "S17",
+      "S4",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S13",
+      "S15",
+      "S3",
+      "S5"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S3",
+      "S5",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S11",
+      "S4",
+      "S6"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S11",
+      "S13",
+      "S15",
+      "S16",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S10",
+      "S14",
+      "S17",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S17",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S9"
+     ],
+     "validation_participants": [
+      "S16",
+      "S7",
+      "S8"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S3",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 725524811,
+   "seed_stream": "inner_split:S3",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S11",
+      "S13",
+      "S14",
+      "S16",
+      "S17",
+      "S2",
+      "S4",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S10",
+      "S15",
+      "S5",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S5",
+      "S6",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S13",
+      "S4",
+      "S8"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S2",
+      "S4",
+      "S5",
+      "S6",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S16",
+      "S17",
+      "S7"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S15",
+      "S16",
+      "S17",
+      "S4",
+      "S5",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S11",
+      "S14",
+      "S2",
+      "S6"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S4",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 2841790188,
+   "seed_stream": "inner_split:S4",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S3",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S17",
+      "S2",
+      "S5",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S11",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S5",
+      "S6",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S13",
+      "S7"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S17",
+      "S2",
+      "S5",
+      "S6",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S15",
+      "S16",
+      "S3",
+      "S8"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S5",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S11",
+      "S14",
+      "S6"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S5",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 1394968525,
+   "seed_stream": "inner_split:S5",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S11",
+      "S13",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S14",
+      "S3",
+      "S4"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S14",
+      "S15",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S11",
+      "S16",
+      "S6"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S3",
+      "S4",
+      "S6",
+      "S8"
+     ],
+     "validation_participants": [
+      "S17",
+      "S2",
+      "S7",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S14",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S6",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S13",
+      "S15",
+      "S8"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S6",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 2591346921,
+   "seed_stream": "inner_split:S6",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S2",
+      "S4",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S17",
+      "S3",
+      "S5",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S5",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S15",
+      "S4",
+      "S7"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S15",
+      "S16",
+      "S17",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S11",
+      "S13",
+      "S14",
+      "S2"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S16",
+      "S8"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S7",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 3447445745,
+   "seed_stream": "inner_split:S7",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S2",
+      "S3",
+      "S4",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S17",
+      "S5",
+      "S6"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S17",
+      "S2",
+      "S5",
+      "S6",
+      "S9"
+     ],
+     "validation_participants": [
+      "S16",
+      "S3",
+      "S4",
+      "S8"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S8"
+     ],
+     "validation_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S16",
+      "S17",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S14",
+      "S15",
+      "S2"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S8",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 3233199762,
+   "seed_stream": "inner_split:S8",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S11",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S5",
+      "S6",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S13",
+      "S3",
+      "S4"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S2",
+      "S3",
+      "S4",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S17",
+      "S5",
+      "S6"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S16",
+      "S17",
+      "S3",
+      "S4",
+      "S5",
+      "S6"
+     ],
+     "validation_participants": [
+      "S15",
+      "S2",
+      "S7",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S15",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S11",
+      "S14",
+      "S16"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S9",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8"
+   ],
+   "n_splits": 4,
+   "seed": 1694703726,
+   "seed_stream": "inner_split:S9",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S3",
+      "S4",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S16",
+      "S17",
+      "S2",
+      "S5"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S5",
+      "S6"
+     ],
+     "validation_participants": [
+      "S3",
+      "S4",
+      "S7",
+      "S8"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S11",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S10",
+      "S13",
+      "S14"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S14",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S11",
+      "S15",
+      "S6"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S10",
+   "outer_train_participants": [
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 550860513,
+   "seed_stream": "inner_split:S10",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S11",
+      "S13",
+      "S15",
+      "S16",
+      "S2",
+      "S3",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S14",
+      "S17",
+      "S4"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S6",
+      "S9"
+     ],
+     "validation_participants": [
+      "S5",
+      "S7",
+      "S8"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S14",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S11",
+      "S13",
+      "S15",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S17",
+      "S4",
+      "S5",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S16",
+      "S2",
+      "S3",
+      "S6"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S11",
+   "outer_train_participants": [
+    "S10",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 3586833668,
+   "seed_stream": "inner_split:S11",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S13",
+      "S14",
+      "S15",
+      "S17",
+      "S2",
+      "S4",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S16",
+      "S3",
+      "S5"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S5",
+      "S6",
+      "S9"
+     ],
+     "validation_participants": [
+      "S4",
+      "S7",
+      "S8"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S14",
+      "S16",
+      "S17",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S13",
+      "S15",
+      "S2",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S15",
+      "S16",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S14",
+      "S17",
+      "S6"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S13",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S14",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 2288540649,
+   "seed_stream": "inner_split:S13",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S16",
+      "S2",
+      "S3",
+      "S4",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S14",
+      "S15",
+      "S17",
+      "S5"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S11",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S5",
+      "S6",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S4",
+      "S7"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S14",
+      "S15",
+      "S17",
+      "S2",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S16",
+      "S3",
+      "S8"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S11",
+      "S2",
+      "S6",
+      "S9"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S14",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S15",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 1486149454,
+   "seed_stream": "inner_split:S14",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S15",
+      "S16",
+      "S2",
+      "S4",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S13",
+      "S17",
+      "S3",
+      "S5"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S5",
+      "S6",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S11",
+      "S4",
+      "S7"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S17",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S15",
+      "S16",
+      "S2",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S11",
+      "S13",
+      "S15",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S6",
+      "S8"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S15",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S16",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 4197716397,
+   "seed_stream": "inner_split:S15",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S16",
+      "S17",
+      "S5",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S2",
+      "S3",
+      "S4",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S13",
+      "S14",
+      "S16",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S6",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S11",
+      "S5",
+      "S7"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S14",
+      "S16",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S13",
+      "S17",
+      "S6"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S14",
+      "S16",
+      "S8"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S16",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S17",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 3285139378,
+   "seed_stream": "inner_split:S16",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S11",
+      "S14",
+      "S15",
+      "S2",
+      "S3",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S13",
+      "S17",
+      "S4"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S17",
+      "S2",
+      "S3",
+      "S4",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S5",
+      "S6",
+      "S8"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S17",
+      "S2",
+      "S4",
+      "S5",
+      "S6",
+      "S8"
+     ],
+     "validation_participants": [
+      "S15",
+      "S3",
+      "S7",
+      "S9"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S15",
+      "S17",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S11",
+      "S14",
+      "S2"
+     ]
+    }
+   ]
+  },
+  {
+   "outer_test_participant": "S17",
+   "outer_train_participants": [
+    "S10",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9"
+   ],
+   "n_splits": 4,
+   "seed": 203430005,
+   "seed_stream": "inner_split:S17",
+   "folds": [
+    {
+     "fold_index": 0,
+     "train_participants": [
+      "S10",
+      "S13",
+      "S14",
+      "S16",
+      "S2",
+      "S3",
+      "S5",
+      "S6",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S11",
+      "S15",
+      "S4",
+      "S7"
+     ]
+    },
+    {
+     "fold_index": 1,
+     "train_participants": [
+      "S11",
+      "S14",
+      "S15",
+      "S16",
+      "S2",
+      "S3",
+      "S4",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+     ],
+     "validation_participants": [
+      "S10",
+      "S13",
+      "S5"
+     ]
+    },
+    {
+     "fold_index": 2,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S15",
+      "S16",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S7",
+      "S9"
+     ],
+     "validation_participants": [
+      "S14",
+      "S6",
+      "S8"
+     ]
+    },
+    {
+     "fold_index": 3,
+     "train_participants": [
+      "S10",
+      "S11",
+      "S13",
+      "S14",
+      "S15",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8"
+     ],
+     "validation_participants": [
+      "S16",
+      "S2",
+      "S3",
+      "S9"
+     ]
+    }
+   ]
+  }
+ ]
+}
