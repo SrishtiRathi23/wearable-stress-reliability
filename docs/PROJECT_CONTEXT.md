@@ -2,7 +2,7 @@
 
 **Purpose of this file.** This is the durable statement of what the project is, why it exists, and what constraints govern it. It exists so that any engineer or coding agent can understand the project from the repository alone, without chat history. It is the authoritative specification unless `docs/decisions.md` records a later change.
 
-Last updated: 2026-09-13 (Phase 3 baselines run under D-028/D-029; artifact recorded in D-031, freeze pending review).
+Last updated: 2026-09-13 (Phase 3 frozen and approved, D-032; Study-A protocol frozen before any selective-label result, D-033).
 
 ---
 
@@ -113,7 +113,7 @@ Not part of the minimum minor project. Do not add datasets merely because they e
 
 ## 6. Core experimental design (four studies)
 
-Details, hypotheses and open TODOs live in `docs/research_protocol.md`. Summary:
+Details, hypotheses and open TODOs live in `docs/research_protocol.md`; the confirmatory Study-A design is frozen in `docs/study_a_protocol.md` (D-033). Summary:
 
 **Study A - Measurement / evaluation distortion.** Fix the held-out recording, the trained model and its predictions. Vary only the label-observation mask (full reference; random; detector-triggered; duration-preferred; mixed targeted + random). Measure how much apparent balanced accuracy, macro-F1, calibration, accepted error, model ranking and participant-level performance change. Test labels must never be used to build the mask. Any detector proposing events must be trained without the held-out participant. Selection should operate at event/episode/block level rather than treating neighbouring 60-s windows as independent events. Annotation budgets must be compared carefully (episodes vs duration vs windows are not interchangeable).
 

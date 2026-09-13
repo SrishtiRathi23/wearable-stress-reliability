@@ -43,6 +43,8 @@ Direction of effect is stated for clarity; the analyses are two-sided.
 
 ## 5. Study A - Measurement / evaluation distortion
 
+> **FROZEN 2026-09-13:** the confirmatory Study-A design is specified in full in [`study_a_protocol.md`](study_a_protocol.md) (D-033), which supersedes the planning text below wherever they differ. In particular: candidate unit = single complete 60-s window (not episodes/blocks); policies = `targeted_consensus_rank` and `random_uniform` (the planned `duration_preferred` and `mixed` policies are not part of confirmatory Study A; `mixed` belongs to Study C, T-09); budgets f in {0.25, 0.50, 0.75} of each participant's complete windows, one unit per selected window; 500 random repetitions; BA estimability rule; primary distortion D(p, b, policy); model-selection sufficiency rule (>= 10 evaluable participants); regret against the frozen XGBoost full-reference mean.
+
 **Design.** Participant-level outer holdout (Section 10). For each held-out participant, a model trained on the other participants produces frozen predictions (probabilities) for every window. The full protocol reference label is available for every window. Observation policies then produce a *mask* selecting which reference labels are visible to the evaluator. Metrics are computed on visible labels only and compared with the full-reference values.
 
 **Invariants.** Same test recording; same trained model; same frozen predictions; only the mask changes. Test labels are never an input to any mask builder (enforced by `tests/test_label_masks.py` once implemented: permuting test labels must not change any mask).
@@ -154,6 +156,7 @@ Any analysis added or changed after results are seen is logged as post-hoc in `d
 
 ## Amendments
 
+- **A-4, 2026-09-13, Section 5.** Study A confirmatory protocol frozen in `study_a_protocol.md` (D-033), resolving T-05/T-06/T-07 before any mask exists. Hypotheses H-A1..H-A4 restated there with the exact primary quantities; the earlier `duration_preferred`/`mixed` policies are removed from confirmatory Study A.
 - **A-3, 2026-09-13, Section 5.** Recorded the primary full-reference model-ranking metric and ordering from the approved, frozen Phase-3 artifact (D-032) before any Study-A work.
 - **A-2, 2026-09-12, Sections 10, 11.** Froze the outer/inner evaluation design (D-028, resolves T-04) and the Phase-3 modelling contract (D-029: candidates, 59-feature allowlist, threshold 0.5, training-only imputation/scaling, class-weight rule, complete-frame prediction output, Study-B warning). Accepted EDA recording-context dependence (D-025), SCR missingness (D-026) and BVP/HR provisional status (D-027). Confirmatory analyses not yet run, so none affected.
 - **A-1, 2026-09-12, Sections 5, 10, 11, 13.** Froze the Phase-2 preprocessing contract after the independent Phase-1 review (D-021, D-022, D-023): wrist E4 primary; time-only 60-s grid anchored at pkl t=0; homogeneous-code eligibility; binary reference 1 vs 2 with 0, 3-7 ineligible; all 15 participants kept; participant as inferential unit; HRV off. Reason: audit facts (dataset_notes.md) and review findings. Confirmatory analyses not yet run, so none affected. Still open: T-04 split, T-05 selection unit, T-06 budgets/repetitions/budget charging, T-07 detector, T-08, T-09, T-10.

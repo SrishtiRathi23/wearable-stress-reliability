@@ -76,8 +76,7 @@ blocks:
   #   445 = windows restarted at run boundaries (uses label timing; NOT the primary frame)
 
 episodes:
-  # Selection UNIT / grouping on the frozen time-only grid: OPEN (T-05).
-  # Protocol blocks are an extremely coarse, condition-confounded annotation
-  # model (KI-05). Also open: budgets, random-mask repetitions, budget charging
-  # for windows outside baseline/stress, the targeted selector (T-06, T-07).
-  definition: null           # TODO T-05
+  # RESOLVED (D-033, docs/study_a_protocol.md): the Study-A selection unit is one
+  # complete 60-s time-grid window; the candidate frame is ALL complete windows.
+  # Protocol blocks / pseudo-episodes are not used (KI-05).
+  definition: complete_60s_time_grid_window

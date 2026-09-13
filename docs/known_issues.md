@@ -78,6 +78,12 @@ Living document. Each item has a status: `open`, `mitigated` (how), `accepted` (
 - **Rule:** the threshold, features, participants and grids are NOT changed in response (D-029, Phase-3 spec section 19). Recorded for interpretation and for the Study-B design.
 - **Status:** open (observation)
 
+### KI-25 Study-A targeted policy may leave many participant/budget cells non-estimable (anticipated, not observed)
+- **Severity:** MEDIUM (feasibility of H-A1 at low budgets)
+- **Issue:** The frozen consensus-rank selector picks the windows the models collectively rate as most stress-like. At the 25 % budget (B_p ~ 22-29 windows of ~87-117) it is plausible that few or no baseline windows are selected for some participants, making BA non-estimable under the frozen availability rule. That outcome is itself part of H-A2 and must be reported, not repaired; but it may mean the H-A1 contrast is only evaluable at 50 %/75 % for part of the cohort. This is written BEFORE any mask exists and is a risk statement, not an observation.
+- **Rule:** budgets, selector and availability rule are not to be changed after masks are inspected (D-033).
+- **Status:** open (anticipated)
+
 ## Modelling
 
 ### KI-07 Activity confounding

@@ -242,6 +242,27 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 - **Closeout fix (no result change):** hard-label metrics now always use the stored hard prediction (`pred_threshold_0_5`), so the majority baseline's declared tie rule (prevalence exactly 0.5 -> 0) governs every hard-label metric. The edge did not occur in the WESAD folds (prevalences 0.349-0.352); metrics recomputed from the frozen parquet with the fixed code are identical to the committed CSVs.
 - **Status:** agreed (frozen)
 
+### D-033 - Study A protocol FROZEN before any selective-label result (resolves T-05, T-06, T-07)
+- **Date:** 2026-09-13
+- **Category:** DESIGN CHOICE (pre-registration)
+- **Full text:** `docs/study_a_protocol.md` (authoritative). Summary:
+  - **T-05 candidate unit:** one complete non-overlapping 60-s Phase-2 time-grid window; candidate frame = ALL complete windows per participant (currently 1442, recomputed, never hard-coded); Phase-2 time-only boundaries; no eligibility prefilter, no block construction, no label use. Participant remains the inferential unit.
+  - **T-06 budget:** one annotation unit per selected window, consumed regardless of the revealed label (out-of-target selections consume budget and never become baseline/stress). Per participant B_p(f) = floor(f x N_p) with primary f in {0.25, 0.50, 0.75} and 1.00 as negative control; identical B_p for targeted and random; 10 % only ever exploratory.
+  - **T-07 selector:** one common targeted policy shared by all evaluated models: within-participant percentile rank (`rankdata`, average ties) of the frozen `prob_positive` for logistic, random_forest and xgboost, averaged equally into a consensus score; top B_p selected; ties broken by ascending SHA-256 of `"{tie_seed}:{participant_id}:{window_id}"` with `tie_seed = child_seed(42, "study_a_selector_tie")`. Majority excluded from the selector. Label-independent, deterministic.
+  - **Random comparator:** uniform without replacement over all complete windows of the participant, exactly B_p, 500 repetitions, seed stream `study_a_random:<pid>:<fraction>:<k>`; same mask for all four families within a repetition.
+  - **Availability rule:** BA estimable only with >= 1 selected baseline AND >= 1 selected stress window; otherwise NA (never 0.5 / majority / borrowed / pooled); `ba_estimable` recorded as an outcome.
+  - **Primary distortion:** D(p, b, policy) = mean over the three learned families of |BA_observed - BA_full|; majority excluded. Contrast C(p, b) = D_targeted - mean random D over estimable repetitions.
+  - **Model selection:** frozen full-reference criterion (D-032); >= 10 of 15 evaluable participants required, else NOT ESTIMABLE; highest mean observed BA over the same evaluable participants; tie (1e-12) order logistic > random_forest > xgboost.
+  - **Regret:** full_reference_mean_BA(XGBoost) - full_reference_mean_BA(selected m), using frozen Phase-3 values; `top_model_changed` recorded; LR <-> RF swaps not exaggerated.
+  - **Probabilistic endpoints:** Brier and log loss on selected eligible labels vs full reference, signed and absolute; never called "calibration distortion" alone; NA with zero eligible labels; no slope/intercept/ECE confirmatory endpoints.
+  - **Secondary metrics:** macro-F1, class recalls, AUROC, AP under the same availability rule.
+  - **Hypotheses:** H-A1 (BA distortion), H-A2 (estimability/class coverage), H-A3 (selection change and regret), H-A4 (Brier/log-loss distortion) - targeted vs matched random; null/reversed results valid.
+  - **Negative control:** at 100 % both policies recover the full frame, all 434 eligible labels, exact full-reference BA, zero distortion, full-reference ranking; failure = STOP.
+  - **Mask pairing:** one mask table keyed by participant/policy/budget/repetition joined to all families; enforced by structure and tests.
+  - **Immutable input:** runner verifies `frozen: true` and the exact SHA-256 through `load_approved_predictions`; fails closed; never regenerates Phase 3 (invariant #21).
+- **Still open:** T-11 participant-level inferential procedure for H-A1..H-A4 (proposed paired sign / Wilcoxon on the 15 participant contrasts; awaiting approval); NA reporting format; whether the exploratory 10 % run happens. Study B/C: T-08, T-09.
+- **Status:** agreed (frozen; no mask built, no outcome inspected)
+
 ---
 
 ## Open decisions (TODO before the affected stage)
@@ -252,12 +273,13 @@ Category tags: DESIGN CHOICE / ASSUMPTION / ENGINEERING.
 | T-02 | ~~Raw label codes~~ RESOLVED as FACT (D-019); ~~binary mapping~~ RESOLVED (D-021): 1 = baseline reference, 2 = protocol-stress reference, {0,3,4,5,6,7} ineligible | labels | `configs/wesad.yaml: labels` |
 | T-03 | ~~Usable participants~~ RESOLVED (D-019, D-021): all 15 kept; no caveat-based exclusion | splits | `docs/dataset_notes.md` |
 | T-04 | ~~Outer/inner split~~ RESOLVED (D-028): LOPO outer (15 folds); inner 4-fold StratifiedGroupKFold on the 14 outer-training participants; participant-level equal-weight balanced-accuracy selection score | baseline | `configs/base.yaml: evaluation` |
-| T-05 | Episode / selection-unit definition on WESAD; candidate generation must itself be label-independent, not just the final mask function. Audit CONFIRMS KI-05: exactly 1 baseline + 1 stress block per participant, so protocol-block selection would be an extremely coarse, condition-confounded annotation model (see KI-05 for the precise limitation). The primary candidate FRAME is now fixed (D-021: time-only 60-s grid at pkl t=0); what remains open is the selection UNIT/grouping on that grid, the annotation budgets, random-mask repetition count, and how budget is charged for windows outside baseline/stress. Engineer's recommendation (not adopted): fixed-length contiguous pseudo-episodes (e.g. 3-5 min) as the primary unit with detector-proposed episodes as a comparison | Study A | `research_protocol.md` S5; KI-05; KI-06 |
-| T-06 | Budget unit and budget grid | Study A/B/C | `configs/base.yaml: observation_policies` |
-| T-07 | Detector definition for `detector_triggered` | Study A | `research_protocol.md` S5 |
+| T-05 | ~~Selection unit~~ RESOLVED (D-033): one complete 60-s time-grid window; candidate frame = all complete windows; no label use | Study A | `study_a_protocol.md` S2 |
+| T-06 | ~~Budget unit and grid~~ RESOLVED for Study A (D-033): one annotation unit per selected window incl. out-of-target; B_p = floor(f x N_p), f in {0.25, 0.50, 0.75} + 1.00 control; 500 random repetitions. Study C accounting remains open (T-09) | Study A | `study_a_protocol.md` S3-S4, S7 |
+| T-07 | ~~Selector~~ RESOLVED (D-033): consensus percentile-rank of frozen LR/RF/XGB `prob_positive`, hash tie-break, majority excluded | Study A | `study_a_protocol.md` S5-S6 |
 | T-08 | Study B specification: development roles (which participants play calibration/threshold/selection roles), detector access in development, coverage constraint or loss, tie handling, comparator; then the regret formula | Study B | `research_protocol.md` S6; KI-18 |
 | T-09 | Study C specification: random sampling frame, overlap/budget accounting between targeted and random draws, 100 %-random same-budget comparator; then the estimator (naive pooled / audit-only / IPW) | Study C | `research_protocol.md` S7; KI-13 |
 | T-10 | HRV feature gating threshold (beat coverage) | features | `configs/base.yaml: features.hrv` |
 | T-11 | Nurse timestamp units / timezone / alignment (Gate 1) | Study D | `configs/nurse.yaml: timestamps` |
 | T-12 | Nurse raw label values and binary mapping | Study D | `configs/nurse.yaml: labels` |
 | T-13 | Coverage levels for tabular selective-prediction reporting | reporting | `configs/base.yaml: abstention` |
+| T-11 | Study-A participant-level inferential procedure for H-A1..H-A4 (proposed: exact paired sign / Wilcoxon signed-rank over the 15 participant contrasts with n_evaluable and effect sizes; no window-level tests) | Study A analysis | `study_a_protocol.md` S20 |

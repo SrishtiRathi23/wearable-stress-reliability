@@ -44,8 +44,12 @@ def test_wesad_config_open_and_resolved_decisions():
     # still open
     assert cfg["evaluation"]["outer_split"] == "leave-one-participant-out" and cfg["evaluation"]["inner_folds"] == 4  # T-04 resolved (D-028)
     assert cfg["phase3"]["classification_threshold"] == 0.5 and cfg["phase3"]["prediction_output"] == "all_complete_windows_of_held_out_participant"
-    assert "episodes.definition" in todos  # T-05
-    assert "observation_policies.budget_unit" in todos and "observation_policies.detector" in todos  # T-06, T-07
+    # T-05/T-06/T-07 frozen for Study A (D-033): no TODO remains in observation_policies
+    assert not [t for t in todos if t.startswith("observation_policies")]
+    op = cfg["observation_policies"]
+    assert op["budget_fractions_primary"] == [0.25, 0.5, 0.75] and op["random_comparator"]["repetitions"] == 500
+    assert op["targeted_selector"]["families"] == ["logistic", "random_forest", "xgboost"] and op["full_best_model"] == "xgboost"
+    assert cfg["episodes"]["definition"] == "complete_60s_time_grid_window"
     # frozen by D-021
     assert cfg["device"] == "wrist" and "device" not in todos  # T-01
     assert cfg["labels"]["raw_codes"][2] == "stress" and cfg["labels"]["positive_code"] == 2 and cfg["labels"]["negative_code"] == 1

@@ -118,15 +118,34 @@ abstention:
   report_coverage_levels: null
 
 observation_policies:
-  # Study A/B/C. Names are placeholders until the mask builders are implemented.
-  policies: [full_reference, random, detector_triggered, duration_preferred, mixed]
-  # Budget unit: TODO (labelled episodes vs labelled duration vs labelled windows).
-  budget_unit: null
-  budgets: null
-  # Study C provisional mixtures: fraction of the labelling budget reserved for random audit.
+  # STUDY A - FROZEN 2026-09-13 (D-033, docs/study_a_protocol.md). Not implemented yet.
+  # Values here document the frozen protocol; a future runner must validate against
+  # them and against the protocol, never expand them.
+  input_artifact: results/phase3/oof_predictions.parquet
+  input_sha256: "34010de95b3779b652fd5c9f7d372e69b3d7d61aac020912fd871d1298022212"
+  candidate_unit: complete_60s_time_grid_window          # T-05: all complete windows, Phase-2 boundaries, no eligibility prefilter
+  budget_unit: annotation_units_one_per_selected_window  # T-06: out-of-target selections still consume budget
+  budget_fractions_primary: [0.25, 0.50, 0.75]
+  budget_fraction_negative_control: 1.00
+  budget_rule: floor_of_fraction_times_participant_window_count
+  policies: [targeted_consensus_rank, random_uniform]
+  targeted_selector:                                      # T-07
+    families: [logistic, random_forest, xgboost]          # majority excluded
+    score: mean_within_participant_percentile_rank_of_prob_positive   # scipy rankdata(method="average")
+    tie_break: sha256_of_tie_seed_participant_id_window_id_ascending
+    tie_seed_stream: study_a_selector_tie
+  random_comparator:
+    sampling: uniform_without_replacement_over_all_complete_windows
+    repetitions: 500
+    seed_stream: "study_a_random:<participant_id>:<fraction>:<repetition>"
+    same_mask_across_all_families: true
+  ba_estimability: at_least_one_selected_baseline_and_one_selected_stress
+  primary_distortion: mean_abs_delta_BA_over_learned_families
+  model_selection_min_evaluable_participants: 10
+  model_selection_tie_order: [logistic, random_forest, xgboost]
+  full_best_model: xgboost
+  # Study C provisional mixtures (NOT frozen; T-09 still open).
   audit_random_fractions: [0.0, 0.1, 0.2, 0.3, 0.5]
-  # Detector used to propose events must be trained WITHOUT the held-out participant.
-  detector: null           # TODO: define (EDA-only score? held-out model?)
 
 logging:
   level: INFO
